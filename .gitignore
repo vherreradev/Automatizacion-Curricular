@@ -1,0 +1,11 @@
+node_modules/
+__pycache__/
+.env
+dist/
+build/
+.DS_Store
+venv/
+.venv/
+*.pyc
+*.pdf
+manual_*.txt

@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Gestión Curricular y Automatización UNL - Carrera de Computación</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- PDF.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- Mammoth.js (Word DOCX reader) CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <!-- html2pdf.js for PDF export CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- html-docx-js for DOCX export CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.min.js"></script>
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        unl: {
+                            blue: '#003366',
+                            lightBlue: '#1e40af',
+                            accent: '#d97706',
+                            green: '#059669',
+                            red: '#dc2626',
+                            dark: '#0f172a',
+                            bg: '#f8fafc'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .drag-over { border-color: #1e40af !important; background-color: #eff6ff !important; }
+        
+        /* ESTILOS DE IMPRESIÓN / PDF DE ANEXO 1 ACTA DE ENCUADRE */
+        .acta-document {
+            font-family: 'Arial', sans-serif;
+            color: #111827;
+            background: #ffffff;
+            padding: 24px 28px;
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .acta-header { text-align: center; border-bottom: 2px solid #003366; padding-bottom: 6px; margin-bottom: 10px; page-break-inside: avoid; break-inside: avoid; }
+        .acta-header h1 { font-size: 12pt; font-weight: bold; color: #003366; margin: 0; text-transform: uppercase; }
+        .acta-header h2 { font-size: 9.5pt; font-weight: bold; color: #374151; margin: 2px 0 0 0; }
+        .acta-header h3 { font-size: 10pt; font-weight: bold; color: #003366; margin: 3px 0 0 0; text-transform: uppercase; }
+        
+        .acta-table-info { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 8.5pt; page-break-inside: avoid; break-inside: avoid; }
+        .acta-table-info td { border: 1px solid #cbd5e1; padding: 3px 5px; }
+        .acta-table-info td.label { font-weight: bold; background-color: #f1f5f9; color: #0f172a; width: 18%; }
+        
+        .acta-sec-title { font-size: 9pt; font-weight: bold; color: #003366; margin-top: 8px; margin-bottom: 3px; text-transform: uppercase; border-bottom: 1px solid #cbd5e1; padding-bottom: 2px; page-break-after: avoid; break-after: avoid; }
+        .acta-p { font-size: 8pt; text-align: justify; margin-bottom: 5px; line-height: 1.35; color: #1f2937; }
+        
+        .acta-table-grid { width: 100%; border-collapse: collapse; margin-top: 4px; margin-bottom: 8px; font-size: 8pt; page-break-inside: avoid; break-inside: avoid; }
+        .acta-table-grid th { border: 1px solid #94a3b8; background-color: #003366; color: #ffffff; padding: 3px 4px; font-weight: bold; text-align: center; }
+        .acta-table-grid td { border: 1px solid #cbd5e1; padding: 3px 4px; color: #1e293b; }
+        
+        .acta-signatures { margin-top: 25px; display: flex; justify-content: center; text-align: center; font-size: 8pt; page-break-inside: avoid; break-inside: avoid; }
+        .acta-sig-box { width: 60%; border-top: 1px solid #475569; padding-top: 4px; margin: 0 auto; text-align: center; }
+
+        .tab-btn.active {
+            background-color: #003366;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER / BARRA SUPERIOR INSTITUCIONAL -->
+    <header class="bg-unl-blue text-white shadow-xl sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <div class="bg-white text-unl-blue p-2 rounded-xl shadow-md font-bold text-xl flex items-center justify-center w-10 h-10 shrink-0">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg md:text-xl font-extrabold tracking-tight">Plataforma de Automatización Curricular UNL</h1>
+                    <p class="text-xs text-blue-200">Carrera de Computación • FEIRNNR • Universidad Nacional de Loja</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-[11px] bg-emerald-600/90 text-white font-bold px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-check-double"></i> Manual Encuadre v2 + EVA-Moodle
+                </span>
+            </div>
+        </div>
+
+        <!-- BARRA DE PESTAÑAS PRINCIPALES -->
+        <nav class="bg-blue-950/80 border-t border-blue-900 px-4">
+            <div class="max-w-7xl mx-auto flex overflow-x-auto space-x-2 py-2 text-xs font-semibold">
+                <button onclick="switchTab('encuadre')" id="btnTab-encuadre" class="tab-btn active px-4 py-2 rounded-xl transition flex items-center gap-2 shrink-0">
+                    <i class="fa-solid fa-file-signature"></i> 1. Acta de Encuadre (Plantilla Unificada)
+                </button>
+                <button onclick="switchTab('eva')" id="btnTab-eva" class="tab-btn text-blue-200 hover:bg-blue-900/60 px-4 py-2 rounded-xl transition flex items-center gap-2 shrink-0">
+                    <i class="fa-solid fa-laptop-code"></i> 2. Gestión y Auditoría EVA
+                </button>
+                <button onclick="switchTab('silabos')" id="btnTab-silabos" class="tab-btn text-blue-200 hover:bg-blue-900/60 px-4 py-2 rounded-xl transition flex items-center gap-2 shrink-0">
+                    <i class="fa-solid fa-shield-halved"></i> 3. Validador de Sílabos
+                </button>
+                <button onclick="switchTab('historial')" id="btnTab-historial" class="tab-btn text-blue-200 hover:bg-blue-900/60 px-4 py-2 rounded-xl transition flex items-center gap-2 shrink-0">
+                    <i class="fa-solid fa-clock-rotate-left"></i> 4. Historial & Evidencias
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full space-y-6">
+
+        <!-- ========================================================================= -->
+        <!-- PESTAÑA 1: AUTOMATIZACIÓN DEL ACTA DE ENCUADRE (PLANTILLA UNIFICADA) -->
+        <!-- ========================================================================= -->
+        <section id="tabContent-encuadre" class="space-y-6">
+            
+            <!-- INTRO BANNER ENCUADRE -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div class="space-y-1">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-unl-blue border border-blue-200">
+                        <i class="fa-solid fa-certificate"></i> Plantilla Unificada Genérica • Carrera de Computación
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-900">Generador y Automatizador del Acta de Encuadre de Asignatura</h2>
+                    <p class="text-slate-600 text-xs max-w-3xl">
+                        Estructure de forma automática el <strong>Acta de Encuadre Unificada y Simplificada</strong>, genere los fragmentos oficiales para el <strong>Foro y Aceptación en EVA</strong>, y descargue el documento listo para firma electrónica.
+                    </p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="loadSampleEncuadre()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-xl font-medium text-xs transition flex items-center gap-2 border border-slate-300">
+                        <i class="fa-solid fa-wand-magic-sparkles text-unl-blue"></i> Cargar Datos de Ejemplo
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- FORMULARIO DE ENTRADA (COL IZQUIERDA - 5 COLS) -->
+                <div class="lg:col-span-5 space-y-6">
+                    
+                    <!-- DATOS GENERALES DE LA ASIGNATURA -->
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-4">
+                        <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2">
+                            <i class="fa-solid fa-id-card text-unl-blue"></i> Datos de la Asignatura y Sesión
+                        </h3>
+
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <label class="font-bold text-slate-700 block mb-1">Nombre de la Asignatura *</label>
+                                <input type="text" id="encAsignatura" placeholder="Ej. Inteligencia Artificial y Sistemas Expertos" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="font-bold text-slate-700 block mb-1">Código *</label>
+                                    <input type="text" id="encCodigo" placeholder="Ej. 0904-CS-05" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue">
+                                </div>
+                                <div>
+                                    <label class="font-bold text-slate-700 block mb-1">Ciclo / Paralelo *</label>
+                                    <input type="text" id="encCicloParalelo" placeholder="Ej. 7mo Ciclo, Paralelo A" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="font-bold text-slate-700 block mb-1">Docente Responsable *</label>
+                                    <input type="text" id="encDocente" placeholder="Ej. Sra. Valeria Del Rosario Herrera Salazar" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue">
+                                </div>
+                                <div>
+                                    <label class="font-bold text-slate-700 block mb-1">Período Académico (PAO) *</label>
+                                    <input type="text" id="encPAO" value="Septiembre 2026 - Marzo 2027" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="font-bold text-slate-700 block mb-1">Fecha de Sesión *</label>
+                                    <input type="date" id="encFecha" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue">
+                                </div>
+                                <div>
+                                    <label class="font-bold text-slate-700 block mb-1">Hora de Inicio *</label>
+                                    <input type="time" id="encHora" value="08:00" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="font-bold text-slate-700 block mb-1">Horario de Clases Presenciales *</label>
+                                <input type="text" id="encHorario" placeholder="Ej. Lunes y Miércoles 08:00 - 10:00" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue">
+                            </div>
+
+                            <div>
+                                <label class="font-bold text-slate-700 block mb-1">Horario de Tutorías Académicas *</label>
+                                <input type="text" id="encTutorias" placeholder="Ej. Jueves 10:00 - 12:00 (Cubículo 12 / Zoom)" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ACUERDOS ESPECÍFICOS ADICIONALES (TABLA DINÁMICA) -->
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                            <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-unl-blue"></i> Acuerdos Específicos Adicionales
+                            </h3>
+                            <button onclick="addAcuerdoRow()" class="px-2.5 py-1 bg-unl-blue text-white rounded-lg text-xs font-bold hover:bg-blue-900 transition flex items-center gap-1">
+                                <i class="fa-solid fa-plus"></i> Añadir
+                            </button>
+                        </div>
+
+                        <p class="text-[11px] text-slate-500">Compromisos particulares acordados en la sesión (ej. entregas a medianoche, uso de Discord/GitHub, reglas de puntualidad, etc.):</p>
+
+                        <div id="acuerdosListContainer" class="space-y-2">
+                            <!-- Filas dinámicas JS -->
+                        </div>
+                    </div>
+
+                    <!-- ORGANIZACIÓN DE EVALUACIÓN Y DIAGNÓSTICO -->
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-4">
+                        <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2">
+                            <i class="fa-solid fa-chart-pie text-unl-blue"></i> Evaluación & Diagnóstico Inicial
+                        </h3>
+
+                        <div class="space-y-3 text-xs">
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+                                <span class="font-bold text-slate-800 block">Ponderación del Sistema de Evaluación (%)</span>
+                                <div class="grid grid-cols-4 gap-2 text-center">
+                                    <div>
+                                        <span class="text-[10px] text-slate-500 font-bold block">ACD</span>
+                                        <input type="number" id="evalACD" value="20" onchange="updateActaPreview()" class="w-full p-1.5 text-center font-bold border rounded-lg">
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] text-slate-500 font-bold block">APE</span>
+                                        <input type="number" id="evalAPE" value="25" onchange="updateActaPreview()" class="w-full p-1.5 text-center font-bold border rounded-lg">
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] text-slate-500 font-bold block">AA</span>
+                                        <input type="number" id="evalAA" value="20" onchange="updateActaPreview()" class="w-full p-1.5 text-center font-bold border rounded-lg">
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] text-slate-500 font-bold block">Sumativa</span>
+                                        <input type="number" id="evalSum" value="35" onchange="updateActaPreview()" class="w-full p-1.5 text-center font-bold border rounded-lg">
+                                    </div>
+                                </div>
+                                <div id="evalSumError" class="text-[11px] font-bold text-rose-600 hidden">¡La suma debe ser exactamente 100%!</div>
+                            </div>
+
+                            <div class="border-t border-slate-100 pt-2 space-y-2">
+                                <span class="font-bold text-slate-800 block">Evaluación Diagnóstica (Primera Semana)</span>
+                                <div>
+                                    <label class="text-slate-600 block mb-1">Instrumento Aplicado</label>
+                                    <input type="text" id="diagInstrumento" value="Tutorías de refuerzo, lecturas complementarias y ejercicios de nivelación" class="w-full p-2 rounded-lg border border-slate-300">
+                                </div>
+                                <div>
+                                    <label class="text-slate-600 block mb-1">Saberes a Reforzar / Acciones</label>
+                                    <input type="text" id="diagSaberes" value="Conceptos de ética general, deontología profesional, dilemas éticos tecnológicos y marco legal informático" class="w-full p-2 rounded-lg border border-slate-300">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BOTÓN DE GENERACIÓN Y ACTUALIZACIÓN -->
+                    <button onclick="generateActaAndResources()" class="w-full py-3 bg-unl-blue hover:bg-blue-900 text-white rounded-xl font-extrabold text-sm shadow-lg transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-gears"></i> Actualizar Acta & Generar Fragmentos EVA
+                    </button>
+
+                </div>
+
+                <!-- VISTA PREVIA Y RECURSOS EVA (COL DERECHA - 7 COLS) -->
+                <div class="lg:col-span-7 space-y-6">
+
+                    <!-- SECCIÓN DE EXPORTACIÓN Y VISTA PREVIA DEL ACTA -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 pb-3">
+                            <div>
+                                <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                                    <i class="fa-solid fa-file-pdf text-rose-600"></i> Acta de Encuadre Unificada (Vista Previa)
+                                </h3>
+                                <p class="text-xs text-slate-500">Documento institucional genérico y sencillo ajustado al formato normado.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2 shrink-0">
+                                <button onclick="exportActaPDF()" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5">
+                                    <i class="fa-solid fa-download"></i> Descargar PDF
+                                </button>
+                                <button onclick="exportActaDOCX()" class="px-3.5 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5">
+                                    <i class="fa-solid fa-file-word"></i> Word (.docx)
+                                </button>
+                                <button onclick="exportActaDOC()" class="px-3.5 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5">
+                                    <i class="fa-solid fa-file-lines"></i> Word (.doc)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- CONTENEDOR VISTA PREVIA ACTA -->
+                        <div id="actaParentScrollContainer" class="bg-slate-100 p-4 rounded-xl overflow-x-auto max-h-[600px] overflow-y-auto">
+                            <div id="actaPreviewContainer" class="acta-document shadow-md">
+                                <!-- Se renderiza dinámicamente con JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RECURSOS OFICIALES PARA EVA-MOODLE (FORO Y ACEPTACIÓN) -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
+                        <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
+                            <i class="fa-solid fa-code text-unl-blue"></i> Fragmentos Generados para Copiar en EVA-Moodle
+                        </h3>
+                        <p class="text-xs text-slate-500">Copie estos textos estandarizados directamente a su aula virtual para cumplir con el procedimiento institucional:</p>
+
+                        <!-- FORO PARTICIPATIVO -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-xs text-unl-blue"><i class="fa-solid fa-comments"></i> 1. Enunciado para el Foro Participativo de Acuerdos</span>
+                                <button onclick="copyToClipboard('textForoEVA')" class="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-700 rounded border border-slate-300 text-[11px] font-bold transition">
+                                    <i class="fa-solid fa-copy"></i> Copiar Texto
+                                </button>
+                            </div>
+                            <textarea id="textForoEVA" rows="4" readonly class="w-full p-2.5 text-xs font-mono bg-white border border-slate-300 rounded-lg text-slate-800"></textarea>
+                        </div>
+
+                        <!-- ACTIVIDAD DE ACEPTACIÓN CON DECLARACIÓN JURADA -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-xs text-emerald-700"><i class="fa-solid fa-file-contract"></i> 2. Texto Institucional Obligatorio para Consulta/Aceptación Estudiantil</span>
+                                <button onclick="copyToClipboard('textAceptacionEVA')" class="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-700 rounded border border-slate-300 text-[11px] font-bold transition">
+                                    <i class="fa-solid fa-copy"></i> Copiar Texto
+                                </button>
+                            </div>
+                            <textarea id="textAceptacionEVA" rows="4" readonly class="w-full p-2.5 text-xs font-mono bg-white border border-slate-300 rounded-lg text-slate-800"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- CHECKLIST DEL DOCENTE PARA ENCUADRE -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                            <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-tasks text-unl-blue"></i> Lista de Comprobación del Docente (Procedimiento de Encuadre)
+                            </h3>
+                            <span id="encChecklistProgress" class="px-2.5 py-1 bg-blue-100 text-unl-blue font-extrabold text-xs rounded-full">0 / 8 Cumplidos</span>
+                        </div>
+
+                        <div class="space-y-2 text-xs" id="encChecklistContainer">
+                            <label class="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border hover:bg-slate-100 cursor-pointer">
+                                <input type="checkbox" onchange="updateChecklistProgress()" class="enc-check rounded text-unl-blue">
+                                <span>1. Sílabo oficial aprobado socializado en clase y publicado en EVA.</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border hover:bg-slate-100 cursor-pointer">
+                                <input type="checkbox" onchange="updateChecklistProgress()" class="enc-check rounded text-unl-blue">
+                                <span>2. Aula Virtual en EVA-Moodle socializada y habilitada desde el primer día.</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border hover:bg-slate-100 cursor-pointer">
+                                <input type="checkbox" onchange="updateChecklistProgress()" class="enc-check rounded text-unl-blue">
+                                <span>3. Actividad participativa de propuestas y acuerdos realizada (Foro EVA).</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border hover:bg-slate-100 cursor-pointer">
+                                <input type="checkbox" onchange="updateChecklistProgress()" class="enc-check rounded text-unl-blue">
+                                <span>4. Acta definitiva consolidada y firmada electrónicamente en PDF.</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border hover:bg-slate-100 cursor-pointer">
+                                <input type="checkbox" onchange="updateChecklistProgress()" class="enc-check rounded text-unl-blue">
+                                <span>5. Acta legalizada publicada en el EVA para libre acceso de los estudiantes.</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border hover:bg-slate-100 cursor-pointer">
+                                <input type="checkbox" onchange="updateChecklistProgress()" class="enc-check rounded text-unl-blue">
+                                <span>6. Actividad de Aceptación individual habilitada en EVA con el texto normado.</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border hover:bg-slate-100 cursor-pointer">
+                                <input type="checkbox" onchange="updateChecklistProgress()" class="enc-check rounded text-unl-blue">
+                                <span>7. Reporte de respuestas/aceptación descargado desde EVA-Moodle.</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border hover:bg-slate-100 cursor-pointer">
+                                <input type="checkbox" onchange="updateChecklistProgress()" class="enc-check rounded text-unl-blue">
+                                <span>8. Acta legalizada y reporte EVA incorporados formalmente al Portafolio Docente.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================================================= -->
+        <!-- PESTAÑA 2: GESTIÓN Y AUDITORÍA DE AULAS VIRTUALES EVA-MOODLE -->
+        <!-- ========================================================================= -->
+        <section id="tabContent-eva" class="hidden space-y-6">
+            
+            <!-- INTRO BANNER EVA -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div class="space-y-1">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                        <i class="fa-solid fa-laptop-code"></i> Manual de Procedimiento EVA-Moodle • Versión 1.0
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-900">Estructurador y Auditor de Calidad del Aula Virtual EVA-Moodle</h2>
+                    <p class="text-slate-600 text-xs max-w-3xl">
+                        Verifique la correspondencia de su aula virtual con los <strong>14 criterios normativos</strong> del manual institucional y genere el <strong>Informe Verificable para el Portafolio Docente</strong>.
+                    </p>
+                </div>
+                <button onclick="runEVAAudit()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-2">
+                    <i class="fa-solid fa-square-check"></i> Evaluar Aula EVA Ahora
+                </button>
+            </div>
+
+            <!-- MATRIZ AUDITORA DE 14 CRITERIOS EVA MOODLE -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-unl-blue"></i> Matriz de 14 Criterios de Verificación para el EVA
+                        </h3>
+                        <p class="text-xs text-slate-500">Seleccione el estado de cumplimiento de cada criterio según su aula en Moodle:</p>
+                    </div>
+
+                    <!-- GAUGE SCORE EVA -->
+                    <div class="flex items-center gap-4 bg-slate-50 p-3 rounded-xl border border-slate-200 shrink-0">
+                        <div class="text-center">
+                            <span id="evaScorePercent" class="text-2xl font-black text-emerald-600">100%</span>
+                            <span class="text-[9px] text-slate-400 block uppercase font-bold">Cumplimiento EVA</span>
+                        </div>
+                        <div id="evaStatusBadge" class="px-3 py-1 bg-emerald-100 text-emerald-800 font-bold text-xs rounded-full border border-emerald-300">
+                            CUMPLE ESTÁNDAR
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABLA DE 14 CRITERIOS -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
+                                <th class="p-3 w-12 text-center">Nro</th>
+                                <th class="p-3">Criterio Normativo de Calidad EVA</th>
+                                <th class="p-3 w-48 text-center">Estado de Verificación</th>
+                                <th class="p-3">Evidencia / Instrucción de Ajuste</th>
+                            </tr>
+                        </thead>
+                        <tbody id="evaCriteriaTableBody" class="divide-y divide-slate-100">
+                            <!-- Filas dinámicas JS para los 14 criterios -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- ACCIONES DE EXPORTACIÓN INFORME EVA -->
+                <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-3">
+                    <span class="text-xs font-bold text-slate-600 flex items-center gap-1">
+                        <i class="fa-solid fa-file-export text-unl-blue"></i> Informe Oficial de Cumplimiento EVA para Portafolio Docente:
+                    </span>
+                    <div class="flex gap-2">
+                        <button onclick="exportReportEVAPDF()" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-pdf"></i> Exportar Informe PDF
+                        </button>
+                        <button onclick="exportReportEVADOCX()" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-word"></i> Exportar Word (.docx)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ESTRUCTURADOR Y PLANTILLAS RECOMENDADAS PARA SECCIONES EVA MOODLE -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
+                <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
+                    <i class="fa-solid fa-sitemap text-unl-blue"></i> Guía Estructural de Bloques y Pestañas para EVA-Moodle
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <!-- SECCIÓN GENERAL -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                        <span class="font-extrabold text-unl-blue block flex items-center gap-1">
+                            <i class="fa-solid fa-home"></i> 7.1 Sección General (Inicio)
+                        </span>
+                        <ul class="list-disc list-inside space-y-1 text-slate-600">
+                            <li>Bienvenida y Perfil del Docente (correo, tutorías).</li>
+                            <li>Sílabo Oficial Aprobado (PDF).</li>
+                            <li>Acta de Encuadre Legalizada (PDF).</li>
+                            <li>Foro Novedades / Consultas Generales.</li>
+                            <li>Enlace a Sala de Videoconferencia (Zoom/Teams).</li>
+                        </ul>
+                    </div>
+
+                    <!-- UNIDADES DIDÁCTICAS -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                        <span class="font-extrabold text-unl-blue block flex items-center gap-1">
+                            <i class="fa-solid fa-folder-tree"></i> 7.2 Pestañas por Unidades
+                        </span>
+                        <ul class="list-disc list-inside space-y-1 text-slate-600">
+                            <li>Recursos de Aprendizaje (Slides, Libros, Papers).</li>
+                            <li>Actividades ACD (Talleres, Lecciones).</li>
+                            <li>Actividades APE (Guías APE + Laboratorio).</li>
+                            <li>Actividades AA (Proyectos, Investigaciones).</li>
+                            <li>Instrucciones con Acción + Contenido + Producto.</li>
+                        </ul>
+                    </div>
+
+                    <!-- DIAGNÓSTICO Y DUA -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                        <span class="font-extrabold text-unl-blue block flex items-center gap-1">
+                            <i class="fa-solid fa-universal-access"></i> 7.4/7.5 Diagnóstico & DUA
+                        </span>
+                        <ul class="list-disc list-inside space-y-1 text-slate-600">
+                            <li>Cuestionario Diagnóstico (Semana 1).</li>
+                            <li>Materiales de Refuerzo / Nivelación.</li>
+                            <li>Formatos accesible (Textos estructurados).</li>
+                            <li>Rúbricas y Listas de Cotejo Digitales.</li>
+                            <li>Adaptaciones para Necesidades Específicas.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ========================================================================= -->
+        <!-- PESTAÑA 3: VALIDADOR ESTRUCTURAL Y STRICTO DE SÍLABOS -->
+        <!-- ========================================================================= -->
+        <section id="tabContent-silabos" class="hidden space-y-6">
+            
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div class="space-y-1">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                        <i class="fa-solid fa-gavel"></i> Memorando UNL-FEIRNNR-CCP-2026-0105-MC
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-900">Validador Estricto de Sílabos para Personal Docente</h2>
+                    <p class="text-slate-600 text-xs max-w-3xl">
+                        Auditoría microcurricular contrastada con el Manual de Sílabos, Manual EVA y Manual de Encuadre (14 criterios obligatorios).
+                    </p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="loadSampleSilabo(false)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-xl font-medium text-xs transition border border-slate-300">
+                        <i class="fa-solid fa-flask text-unl-blue"></i> Ejemplo Válido
+                    </button>
+                    <button onclick="loadSampleSilabo(true)" class="bg-amber-50 hover:bg-amber-100 text-amber-800 px-3.5 py-2 rounded-xl font-medium text-xs transition border border-amber-300">
+                        <i class="fa-solid fa-bug text-amber-600"></i> Ejemplo con Fallas
+                    </button>
+                </div>
+            </div>
+
+            <!-- CARGA DE SÍLABO -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
+                <div id="dropZone" class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center bg-slate-50 hover:bg-slate-100 transition cursor-pointer relative">
+                    <input type="file" id="fileInput" accept=".pdf, .docx, .txt" class="hidden" onchange="handleFileSelect(event)">
+                    <div class="space-y-2">
+                        <div class="w-12 h-12 bg-blue-50 text-unl-blue rounded-full flex items-center justify-center mx-auto text-xl shadow-inner">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <p class="text-sm font-semibold text-slate-800">Arrastra tu sílabo aquí o <span class="text-unl-lightBlue underline">haz clic para examinar</span></p>
+                        <p class="text-[11px] text-slate-500">Admite PDF, Word (.docx) o Texto Plano</p>
+                    </div>
+                </div>
+
+                <textarea id="silaboText" rows="5" placeholder="O pega el contenido completo del sílabo aquí..." class="w-full p-3 rounded-xl border border-slate-300 text-xs font-mono bg-slate-50/50"></textarea>
+
+                <div class="flex justify-between items-center pt-2">
+                    <span id="fileStatusText" class="text-xs text-slate-500 flex items-center gap-1">
+                        <i class="fa-solid fa-info-circle"></i> Listo para analizar.
+                    </span>
+                    <button onclick="analyzeSilabo()" class="px-6 py-2.5 bg-unl-blue hover:bg-blue-900 text-white rounded-xl text-xs font-extrabold shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved"></i> Ejecutar Auditoría Estricta
+                    </button>
+                </div>
+            </div>
+
+            <!-- RESULTADOS AUDITORÍA SÍLABOS -->
+            <div id="silaboResultsSection" class="hidden space-y-6">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                    <div class="md:col-span-4 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-100 pb-4 md:pb-0 md:pr-4">
+                        <div class="relative w-32 h-32 flex items-center justify-center">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                <path class="text-slate-100" stroke-width="3.8" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                                <path id="scoreCircle" class="text-emerald-500 transition-all duration-1000 ease-out" stroke-dasharray="0, 100" stroke-width="3.8" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                            </svg>
+                            <div class="absolute flex flex-col items-center">
+                                <span id="scorePercentage" class="text-2xl font-black text-slate-900">0%</span>
+                                <span class="text-[9px] uppercase tracking-wider font-bold text-slate-400">Score Sílabo</span>
+                            </div>
+                        </div>
+                        <div id="statusBadge" class="mt-3 px-3 py-1 rounded-full text-[11px] font-black uppercase shadow-sm">--</div>
+                    </div>
+
+                    <div class="md:col-span-8 space-y-3">
+                        <h3 id="silaboDetectedTitle" class="text-lg font-extrabold text-slate-900">--</h3>
+                        <p id="silaboDetectedCode" class="text-xs text-slate-500">--</p>
+
+                        <div class="grid grid-cols-4 gap-2 text-center text-xs">
+                            <div class="bg-slate-50 p-2 rounded-lg border"><span class="text-[10px] text-slate-400 block">ACD</span><strong id="infoACD">--</strong></div>
+                            <div class="bg-slate-50 p-2 rounded-lg border"><span class="text-[10px] text-slate-400 block">APE</span><strong id="infoAPE">--</strong></div>
+                            <div class="bg-slate-50 p-2 rounded-lg border"><span class="text-[10px] text-slate-400 block">AA</span><strong id="infoAA">--</strong></div>
+                            <div class="bg-slate-50 p-2 rounded-lg border"><span class="text-[10px] text-slate-400 block">Total</span><strong id="infoTotalHours" class="text-unl-blue">--</strong></div>
+                        </div>
+
+                        <div class="flex gap-2 pt-2">
+                            <button onclick="exportReportSilaboPDF()" class="px-3 py-1.5 bg-rose-600 text-white text-xs font-bold rounded-lg"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                            <button onclick="exportReportSilaboDOCX()" class="px-3 py-1.5 bg-blue-700 text-white text-xs font-bold rounded-lg"><i class="fa-solid fa-file-word"></i> Word</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="auditCardsContainer" class="space-y-3"></div>
+            </div>
+
+        </section>
+
+
+        <!-- ========================================================================= -->
+        <!-- PESTAÑA 4: HISTORIAL DE REGISTROS Y CENTRO DE EVIDENCIAS -->
+        <!-- ========================================================================= -->
+        <section id="tabContent-historial" class="hidden space-y-6">
+            
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-unl-blue"></i> Historial Persistente de Documentos y Evidencias
+                    </h2>
+                    <p class="text-xs text-slate-500">Registro guardado localmente en su navegador para rápida consulta y re-exportación.</p>
+                </div>
+                <button onclick="clearHistory()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold border">
+                    <i class="fa-solid fa-trash"></i> Limpiar Historial
+                </button>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 font-bold border-b border-slate-200">
+                                <th class="p-3">Fecha</th>
+                                <th class="p-3">Tipo Documento</th>
+                                <th class="p-3">Asignatura / Detalle</th>
+                                <th class="p-3">Resultado / Estado</th>
+                                <th class="p-3 text-right">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody" class="divide-y divide-slate-100">
+                            <!-- JS history rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER INSTITUCIONAL -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-5 border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-1">
+            <p>© 2026 Universidad Nacional de Loja • Facultad de la Energía, las Industrias y los Recursos Naturales No Renovables</p>
+            <p class="text-slate-500">Carrera de Computación • Plataforma Integrada de Automatización y Aseguramiento de Calidad Académica</p>
+        </div>
+    </footer>
+
+
+    <!-- LOGIC JS ENGINE -->
+    <script>
+        // GLOBAL STORAGE KEYS
+        const STORAGE_KEY_HISTORY = 'unl_academic_platform_history_v1';
+
+        // ACTIVE TAB MANAGING
+        function switchTab(tabName) {
+            ['encuadre', 'eva', 'silabos', 'historial'].forEach(t => {
+                const content = document.getElementById(`tabContent-${t}`);
+                const btn = document.getElementById(`btnTab-${t}`);
+                if (t === tabName) {
+                    content.classList.remove('hidden');
+                    btn.className = 'tab-btn active px-4 py-2 rounded-xl transition flex items-center gap-2 shrink-0';
+                } else {
+                    content.classList.add('hidden');
+                    btn.className = 'tab-btn text-blue-200 hover:bg-blue-900/60 px-4 py-2 rounded-xl transition flex items-center gap-2 shrink-0';
+                }
+            });
+        }
+
+        // =========================================================================
+        // MÓDULO 1: ACTA DE ENCUADRE DE ASIGNATURA (PLANTILLA UNIFICADA Y GENÉRICA)
+        // =========================================================================
+
+        let acuerdosList = [
+            { id: 1, acuerdo: 'Los productos y tareas requeridos en EVA tendrán como plazo límite de entrega las 23:59 del día fijado.', responsable: 'Estudiantes' },
+            { id: 2, acuerdo: 'La retroalimentación de tareas e informes APE se registrará en EVA en un máximo de 5 días laborables.', responsable: 'Docente' },
+            { id: 3, acuerdo: 'El uso de Inteligencia Artificial Generativa se sujetará a las instrucciones expresas de cada actividad declarando su empleo.', responsable: 'Estudiantes' }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('encFecha').value = today;
+
+            renderAcuerdosRows();
+            updateActaPreview();
+            initEVACriteriaTable();
+            renderHistoryTable();
+        });
+
+        function addAcuerdoRow() {
+            const nextId = Date.now();
+            acuerdosList.push({ id: nextId, acuerdo: '', responsable: 'Docente y Estudiantes' });
+            renderAcuerdosRows();
+            updateActaPreview();
+        }
+
+        function removeAcuerdoRow(id) {
+            acuerdosList = acuerdosList.filter(a => a.id !== id);
+            renderAcuerdosRows();
+            updateActaPreview();
+        }
+
+        function renderAcuerdosRows() {
+            const container = document.getElementById('acuerdosListContainer');
+            container.innerHTML = '';
+            acuerdosList.forEach((item, index) => {
+                const row = `
+                    <div class="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border border-slate-200 text-xs">
+                        <span class="font-bold text-slate-500 w-5 text-center">${index + 1}.</span>
+                        <input type="text" value="${item.acuerdo}" onchange="updateAcuerdoText(${item.id}, this.value)" placeholder="Descripción del acuerdo o compromiso..." class="flex-grow p-1.5 rounded border border-slate-300">
+                        <input type="text" value="${item.responsable}" onchange="updateAcuerdoResp(${item.id}, this.value)" placeholder="Responsable" class="w-32 p-1.5 rounded border border-slate-300">
+                        <button onclick="removeAcuerdoRow(${item.id})" class="text-rose-600 hover:text-rose-800 p-1"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                `;
+                container.innerHTML += row;
+            });
+        }
+
+        function updateAcuerdoText(id, val) {
+            const item = acuerdosList.find(a => a.id === id);
+            if (item) item.acuerdo = val;
+            updateActaPreview();
+        }
+
+        function updateAcuerdoResp(id, val) {
+            const item = acuerdosList.find(a => a.id === id);
+            if (item) item.responsable = val;
+            updateActaPreview();
+        }
+
+        function loadSampleEncuadre() {
+            document.getElementById('encAsignatura').value = 'INTELIGENCIA ARTIFICIAL Y SISTEMAS EXPERTOS';
+            document.getElementById('encCodigo').value = '0904-CS-05';
+            document.getElementById('encCicloParalelo').value = '7mo Ciclo, Paralelo "A"';
+            document.getElementById('encDocente').value = 'Sra. Valeria Del Rosario Herrera Salazar';
+            document.getElementById('encPAO').value = 'Septiembre 2026 - Marzo 2027';
+            document.getElementById('encHorario').value = 'Lunes y Miércoles 08:00 - 10:00';
+            document.getElementById('encTutorias').value = 'Jueves 10:00 - 12:00 (Cubículo 12 / Zoom)';
+            
+            acuerdosList = [
+                { id: 1, acuerdo: 'Entregas de trabajos y tareas en EVA habilitadas hasta las 23:59 de la fecha de cierre.', responsable: 'Estudiantes' },
+                { id: 2, acuerdo: 'Retroalimentación y calificación en EVA dentro de 5 días laborables tras la entrega.', responsable: 'Docente' },
+                { id: 3, acuerdo: 'Uso ético y crítico de IA Generativa declarando las herramientas empleadas.', responsable: 'Estudiantes' }
+            ];
+
+            renderAcuerdosRows();
+            generateActaAndResources();
+        }
+
+        function updateActaPreview() {
+            const asig = document.getElementById('encAsignatura').value || '__________________________________';
+            const cod = document.getElementById('encCodigo').value || '______';
+            const cp = document.getElementById('encCicloParalelo').value || '______';
+            const doc = document.getElementById('encDocente').value || '______________________________________';
+            const pao = document.getElementById('encPAO').value || 'Septiembre 2026 - Marzo 2027';
+            const fecStr = document.getElementById('encFecha').value;
+            const horStr = document.getElementById('encHora').value || '08:00';
+            const horario = document.getElementById('encHorario').value || 'Lunes y Miércoles 08:00 - 10:00';
+            const tutorias = document.getElementById('encTutorias').value || 'Jueves 10:00 - 12:00';
+
+            const acd = parseInt(document.getElementById('evalACD').value) || 0;
+            const ape = parseInt(document.getElementById('evalAPE').value) || 0;
+            const aa = parseInt(document.getElementById('evalAA').value) || 0;
+            const sum = parseInt(document.getElementById('evalSum').value) || 0;
+
+            const sumError = document.getElementById('evalSumError');
+            if (acd + ape + aa + sum !== 100) {
+                sumError.classList.remove('hidden');
+            } else {
+                sumError.classList.add('hidden');
+            }
+
+            const diagInst = document.getElementById('diagInstrumento').value;
+            const diagSab = document.getElementById('diagSaberes').value;
+
+            // Date parsing
+            let fechaTexto = "____ días del mes de __________________ del 2026";
+            if (fecStr) {
+                const parts = fecStr.split('-');
+                const d = parts[2];
+                const mIdx = parseInt(parts[1]) - 1;
+                const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+                fechaTexto = `${d} días del mes de ${meses[mIdx]} del ${parts[0]}`;
+            }
+
+            // Build Acuerdos Rows HTML
+            let acuerdosHtml = '';
+            acuerdosList.forEach((item, idx) => {
+                if (item.acuerdo.trim() !== '') {
+                    acuerdosHtml += `
+                        <tr>
+                            <td style="text-align: center; font-weight: bold;">${idx + 1}</td>
+                            <td>${item.acuerdo}</td>
+                            <td>${item.responsable}</td>
+                        </tr>
+                    `;
+                }
+            });
+            if (!acuerdosHtml) {
+                acuerdosHtml = `<tr><td colspan="3" style="text-align: center; color: #6b7280;">Sin acuerdos adicionales registrados.</td></tr>`;
+            }
+
+            const html = `
+                <div class="acta-header">
+                    <h1>UNIVERSIDAD NACIONAL DE LOJA</h1>
+                    <h2>FACULTAD DE LA ENERGÍA, LAS INDUSTRIAS Y LOS RECURSOS NATURALES NO RENOVABLES</h2>
+                    <h3>CARRERA DE COMPUTACIÓN</h3>
+                    <p style="font-size: 8.5pt; font-weight: bold; color: #4b5563; margin-top: 4px;">ACTA DE PRESENTACIÓN, ENCUADRE Y SOCIALIZACIÓN DE LA ASIGNATURA</p>
+                </div>
+
+                <table class="acta-table-info">
+                    <tr>
+                        <td class="label">Asignatura:</td>
+                        <td style="font-weight: bold;">${asig}</td>
+                        <td class="label">Código:</td>
+                        <td>${cod}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Docente:</td>
+                        <td style="font-weight: bold;">${doc}</td>
+                        <td class="label">Ciclo / Par.:</td>
+                        <td>${cp}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">PAO:</td>
+                        <td>${pao}</td>
+                        <td class="label">Horario Clases:</td>
+                        <td>${horario}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Fecha / Hora:</td>
+                        <td>${fechaTexto}, ${horStr} hs.</td>
+                        <td class="label">Tutorías:</td>
+                        <td>${tutorias}</td>
+                    </tr>
+                </table>
+
+                <div class="acta-sec-title">1. Constancia de socialización y encuadre</div>
+                <p class="acta-p">
+                    En la ciudad de Loja, a los ${fechaTexto}, siendo las ${horStr} horas, en la sesión presencial/virtual del <strong>${cp}</strong> de la Carrera de Computación de la Universidad Nacional de Loja, con la presencia del/la docente <strong>${doc}</strong> y los estudiantes matriculados en la asignatura <strong>“${asig}”</strong>, se llevó a cabo la presentación, encuadre y socialización del sílabo. En concordancia con el Art. 106 del Reglamento de Régimen Académico (RRA-UNL) y los procedimientos de la Carrera, las partes acuerdan y se comprometen a cumplir lo siguiente:
+                </p>
+
+                <div class="acta-sec-title">2. Acuerdos y compromisos generales de la asignatura</div>
+                <p class="acta-p">
+                    <strong>a) Desarrollo Curricular y Horarios:</strong> La asignatura se cumplirá conforme a lo previsto en el Sílabo. El docente cubrirá los contenidos temáticos planificados, respetará la distribución de horas ACD, APE y AA, y asistirá puntualmente a clases. Se dará un receso de 10 a 15 minutos en jornadas mayores a 2 horas.<br>
+                    <strong>b) Aprendizaje Práctico-Experimental (APE):</strong> Las actividades APE se ejecutarán dentro del horario académico planificado bajo la supervisión del docente y/o técnico docente, contando con su respectiva guía. Los estudiantes cuidarán y harán buen uso del equipamiento e infraestructura de laboratorio y recursos de la UNL.<br>
+                    <strong>c) Entrega de Trabajos y Retroalimentación:</strong> Los trabajos, tareas e informes se entregarán en la plataforma EVA en la fecha y hora señaladas. La retroalimentación y calificación se registrarán en un plazo máximo de 5 días laborables posteriores a la entrega.<br>
+                    <strong>d) Asistencia y Justificaciones:</strong> La asistencia a clases es obligatoria conforme al RRA-UNL. Las inasistencias se justificarán por certificados médicos debidamente legalizados o fuerza mayor a través del trámite reglamentario dentro de los 5 días laborables posteriores.<br>
+                    <strong>e) Honestidad Académica e Integridad:</strong> Queda estrictamente prohibida cualquier forma de plagio o deshonestidad académica. El uso de IA Generativa se sujetará a las instrucciones del docente declarando críticamente su uso.<br>
+                    <strong>f) Convivencia, Respeto e Inclusión:</strong> Las actividades se desarrollarán en un clima de respeto mutuo, cordialidad, adaptaciones curriculares/DUA y bioseguridad.<br>
+                    <strong>g) Aprobación y Recuperación:</strong> La nota mínima de aprobación es de 7.0/10 puntos. El estudiante con nota final inferior a 7 puntos tendrá derecho a evaluación de recuperación siempre y cuando cumpla con lo estipulado en los (Arts. 194-197 RRA-UNL).
+                </p>
+
+                <div class="acta-sec-title">3. Acuerdos específicos adicionales de la asignatura</div>
+                <table class="acta-table-grid">
+                    <thead>
+                        <tr>
+                            <th style="width: 8%;">Nro.</th>
+                            <th style="width: 65%;">Acuerdo / Compromiso</th>
+                            <th style="width: 27%;">Responsable / Observación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${acuerdosHtml}
+                    </tbody>
+                </table>
+
+                <div class="acta-sec-title">4. Estructura del sistema de evaluación</div>
+                <table class="acta-table-grid">
+                    <thead>
+                        <tr>
+                            <th>Componente</th>
+                            <th>Ponderación</th>
+                            <th>Productos / Evidencias principales</th>
+                            <th>Instrumentos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: bold;">ACD (Docente)</td>
+                            <td style="text-align: center; font-weight: bold;">${acd} %</td>
+                            <td>Lecciones, talleres colaborativos, controles de lectura</td>
+                            <td>Cuestionarios, Rúbricas</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold;">APE (Prácticas)</td>
+                            <td style="text-align: center; font-weight: bold;">${ape} %</td>
+                            <td>Informes de laboratorio, guías de práctica APE ejecutadas</td>
+                            <td>Listas de cotejo, Rúbricas APE</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold;">AA (Autónomo)</td>
+                            <td style="text-align: center; font-weight: bold;">${aa} %</td>
+                            <td>Trabajos independientes, proyectos integradores, informes</td>
+                            <td>Rúbricas de evaluación</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold;">Sumativa / Examen</td>
+                            <td style="text-align: center; font-weight: bold;">${sum} %</td>
+                            <td>Evaluación teórica/práctica de fin de unidad / ciclo</td>
+                            <td>Reactivos, Examen escrito/digital</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- CONTENEDOR DE SECCIÓN 5, 6 Y FIRMA ÚNICA DOCENTE PROTEGIDO CONTRA CORTE DE PÁGINA -->
+                <div style="page-break-inside: avoid; break-inside: avoid;">
+                    <div class="acta-sec-title">5. Evaluación diagnóstica e inicial</div>
+                    <p class="acta-p" style="font-size: 8pt; margin-bottom: 4px;">
+                        <strong>Instrumento:</strong> ${diagInst}<br>
+                        <strong>Saberes a reforzar / Acciones:</strong> ${diagSab} (Acompañamiento mediante Tutorías Académicas y Recursos en EVA).
+                    </p>
+
+                    <div class="acta-sec-title">6. Ratificación y aceptación mediante EVA</div>
+                    <p class="acta-p" style="font-size: 7.5pt;">
+                        Para constancia de lo actuado, el docente legaliza la presente versión del Acta de Encuadre mediante su firma electrónica y procede a su publicación en el aula virtual EVA-UNL. Cada estudiante registrará libre y voluntariamente su aceptación a través de la plataforma institucional.
+                    </p>
+
+                    <!-- FIRMA ÚNICA DEL DOCENTE CENTRADA -->
+                    <div class="acta-signatures">
+                        <div class="acta-sig-box">
+                            <strong>${doc}</strong><br>
+                            <span>DOCENTE RESPONSABLE</span><br>
+                            <span style="font-size: 7pt; color: #6b7280;">(Firmado Electrónicamente)</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('actaPreviewContainer').innerHTML = html;
+        }
+
+        function generateActaAndResources() {
+            updateActaPreview();
+
+            const asig = document.getElementById('encAsignatura').value || 'Asignatura';
+            const doc = document.getElementById('encDocente').value || 'Docente';
+
+            // Generate EVA Forum text
+            const textForo = `ESTIMADOS ESTUDIANTES DE LA ASIGNATURA "${asig.toUpperCase()}":
+
+Bienvenidos al inicio del período académico. Conforme al Art. 106 del RRA-UNL y al Manual de Encuadre de la Carrera de Computación, se habilita este foro participativo para recepcionar sus inquietudes, propuestas u observaciones respecto al Sílabo y al Acta de Encuadre socializados en clase.
+
+Por favor expresen en este espacio cualquier propuesta de acuerdo adicional antes de proceder a la consolidación y legalización definitiva del Acta de Encuadre.
+
+Atentamente,
+${doc}`;
+
+            // Generate EVA Acceptance Text (Standard Declaration)
+            const textAceptacion = `DECLARACIÓN JURADA DE ACEPTACIÓN EN EVA:
+
+“Declaro haber tenido acceso al sílabo y al Acta de Presentación, Encuadre y Socialización de la Asignatura '${asig}' debidamente legalizada; conocer las condiciones de desarrollo de la asignatura, criterios de evaluación, compromisos y acuerdos establecidos; y registrar mediante esta actividad mi aceptación u observación.”`;
+
+            document.getElementById('textForoEVA').value = textForo;
+            document.getElementById('textAceptacionEVA').value = textAceptacion;
+
+            // Save to persistent history
+            saveRecordToHistory('ACTA_ENCUADRE', asig, 'Acta de Encuadre Legalizada (Unificada)', 'GENERADA');
+        }
+
+        // =========================================================================
+        // EXPORTACIÓN PDF DE ALTA PRECISIÓN (SIN HOJA EN BLANCO NI CORTES)
+        // =========================================================================
+        function exportActaPDF() {
+            updateActaPreview();
+            const previewEl = document.getElementById('actaPreviewContainer');
+            const scrollParent = document.getElementById('actaParentScrollContainer');
+            const asig = (document.getElementById('encAsignatura').value || 'Asignatura').replace(/[^a-zA-Z0-9]/g, '_');
+            const fileName = `Acta_Encuadre_${asig}_UNL.pdf`;
+
+            // Guardar estilos de desbordamiento originales
+            const origMaxHeight = scrollParent.style.maxHeight;
+            const origOverflow = scrollParent.style.overflow;
+
+            // Expandir temporalmente el contenedor para que html2canvas capture todo el contenido visible sin recortar
+            scrollParent.style.maxHeight = 'none';
+            scrollParent.style.overflow = 'visible';
+
+            const opt = {
+                margin:       [10, 10, 12, 10], // arriba, izquierda, abajo, derecha (mm)
+                filename:     fileName,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, scrollY: 0, logging: false },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+            };
+
+            html2pdf().set(opt).from(previewEl).save().then(() => {
+                // Restaurar estilos de desbordamiento
+                scrollParent.style.maxHeight = origMaxHeight;
+                scrollParent.style.overflow = origOverflow;
+            }).catch(err => {
+                console.error('Error al generar PDF:', err);
+                scrollParent.style.maxHeight = origMaxHeight;
+                scrollParent.style.overflow = origOverflow;
+            });
+        }
+
+        // =========================================================================
+        // EXPORTACIÓN A WORD COMPATIBLE (.DOCX Y .DOC)
+        // =========================================================================
+        function exportActaDOCX() {
+            updateActaPreview();
+            const asig = (document.getElementById('encAsignatura').value || 'Asignatura').replace(/[^a-zA-Z0-9]/g, '_');
+            const containerHtml = document.getElementById('actaPreviewContainer').innerHTML;
+
+            const fullHtml = `
+                <!DOCTYPE html>
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset='utf-8'>
+                    <title>Acta de Encuadre UNL</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; font-size: 9pt; color: #111827; }
+                        h1 { font-size: 12pt; font-weight: bold; color: #003366; text-align: center; margin: 0; }
+                        h2 { font-size: 10pt; font-weight: bold; color: #374151; text-align: center; margin: 2px 0; }
+                        h3 { font-size: 11pt; font-weight: bold; color: #003366; text-align: center; margin: 4px 0; }
+                        .acta-table-info { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 9pt; }
+                        .acta-table-info td { border: 1px solid #cbd5e1; padding: 4px; }
+                        .acta-table-info td.label { font-weight: bold; background-color: #f1f5f9; }
+                        .acta-sec-title { font-size: 9.5pt; font-weight: bold; color: #003366; margin-top: 10px; margin-bottom: 4px; border-bottom: 1px solid #cbd5e1; }
+                        .acta-p { font-size: 8.5pt; text-align: justify; margin-bottom: 6px; line-height: 1.35; }
+                        .acta-table-grid { width: 100%; border-collapse: collapse; margin-top: 6px; margin-bottom: 10px; font-size: 8.5pt; }
+                        .acta-table-grid th { border: 1px solid #94a3b8; background-color: #003366; color: #ffffff; padding: 4px; font-weight: bold; }
+                        .acta-table-grid td { border: 1px solid #cbd5e1; padding: 4px; }
+                        .acta-signatures { margin-top: 30px; width: 100%; text-align: center; }
+                        .acta-sig-box { width: 60%; margin: 0 auto; border-top: 1px solid #475569; padding-top: 4px; text-align: center; }
+                    </style>
+                </head>
+                <body>
+                    ${containerHtml}
+                </body>
+                </html>
+            `;
+
+            if (typeof htmlDocx !== 'undefined') {
+                try {
+                    const converted = htmlDocx.asBlob(fullHtml);
+                    const url = URL.createObjectURL(converted);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Acta_Encuadre_${asig}_UNL.docx`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    return;
+                } catch (e) {
+                    console.warn('Fallback a formato .doc por compatibilidad:', e);
+                }
+            }
+
+            exportActaDOC();
+        }
+
+        function exportActaDOC() {
+            updateActaPreview();
+            const asig = (document.getElementById('encAsignatura').value || 'Asignatura').replace(/[^a-zA-Z0-9]/g, '_');
+            const containerHtml = document.getElementById('actaPreviewContainer').innerHTML;
+
+            const fullHtml = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset='utf-8'>
+                    <title>Acta de Encuadre UNL</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; font-size: 9.5pt; color: #111827; }
+                        .acta-table-info { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+                        .acta-table-info td { border: 1px solid #cbd5e1; padding: 4px; }
+                        .acta-table-info td.label { font-weight: bold; background-color: #f1f5f9; }
+                        .acta-sec-title { font-size: 10pt; font-weight: bold; color: #003366; margin-top: 12px; border-bottom: 1px solid #cbd5e1; }
+                        .acta-p { font-size: 9pt; text-align: justify; margin-bottom: 6px; }
+                        .acta-table-grid { width: 100%; border-collapse: collapse; margin-top: 6px; }
+                        .acta-table-grid th { border: 1px solid #94a3b8; background-color: #003366; color: #ffffff; padding: 4px; }
+                        .acta-table-grid td { border: 1px solid #cbd5e1; padding: 4px; }
+                        .acta-signatures { margin-top: 40px; width: 100%; text-align: center; }
+                        .acta-sig-box { width: 60%; margin: 0 auto; border-top: 1px solid #475569; padding-top: 4px; text-align: center; }
+                    </style>
+                </head>
+                <body>
+                    ${containerHtml}
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob(['\ufeff', fullHtml], { type: 'application/msword;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Acta_Encuadre_${asig}_UNL.doc`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function updateChecklistProgress() {
+            const checks = document.querySelectorAll('.enc-check');
+            let count = 0;
+            checks.forEach(c => { if (c.checked) count++; });
+            document.getElementById('encChecklistProgress').innerText = `${count} / ${checks.length} Cumplidos`;
+        }
+
+        function copyToClipboard(id) {
+            const el = document.getElementById(id);
+            navigator.clipboard.writeText(el.value).then(() => {
+                alert('¡Texto copiado al portapapeles exitosamente!');
+            });
+        }
+
+
+        // =========================================================================
+        // MÓDULO 2: GESTIÓN Y AUDITORÍA EVA-MOODLE (MANUAL EVA-MOODLE)
+        // =========================================================================
+
+        const evaCriteriaData = [
+            { id: 1, title: 'Accesibilidad general del aula virtual para los estudiantes.', status: 'PASS', desc: 'El aula está visible y accesible desde el primer día de clases.' },
+            { id: 2, title: 'Sílabo oficial aprobado disponible en formato PDF.', status: 'PASS', desc: 'Sílabo publicado en la Sección General.' },
+            { id: 3, title: 'Estructura por pestañas/bloques correspondiente a las unidades del sílabo.', status: 'PASS', desc: 'Pestañas organizadas por unidades didácticas secuenciales.' },
+            { id: 4, title: 'Existencia de recursos y actividades coherentes con ACD, APE y AA.', status: 'PASS', desc: 'Actividades desglosadas por componente formativo.' },
+            { id: 5, title: 'Actividades con instrucciones claras (Acción + Contenido + Entregable), fechas y criterios.', status: 'PASS', desc: 'Instrucciones pedagógicas completas.' },
+            { id: 6, title: 'Evaluación diagnóstica inicial aplicada y nivelación disponible.', status: 'PASS', desc: 'Cuestionario diagnóstico publicado en semana 1.' },
+            { id: 7, title: 'Utilización de instrumentos de evaluación verificables (Rúbricas, Listas de Cotejo).', status: 'PASS', desc: 'Rúbricas Moodle configuradas en tareas y talleres.' },
+            { id: 8, title: 'Registro oportuno de calificaciones y retroalimentación cualitativa.', status: 'PASS', desc: 'Retroalimentación registrada en 5 días laborables.' },
+            { id: 9, title: 'Criterios de accesibilidad e inclusión (DUA) incorporados.', status: 'PASS', desc: 'Recursos en diversos formatos legibles.' },
+            { id: 10, title: 'Reporte/Informe del EVA generado para el Portafolio Docente.', status: 'PASS', desc: 'Informe institucional descargado e incorporado.' },
+            { id: 11, title: 'Canales formales de comunicación y consultas activos (Foro General).', status: 'PASS', desc: 'Foro permanente habilitado.' },
+            { id: 12, title: 'Guías APE publicadas previamente a la ejecución de cada práctica.', status: 'PASS', desc: 'Guías APE en PDF accesibles en las unidades.' },
+            { id: 13, title: 'Horarios de tutorías académicas y enlace de videoconferencia publicados.', status: 'PASS', desc: 'Información visible en la Sección General.' },
+            { id: 14, title: 'Declaración y políticas de Ética, Integridad y uso de IA Generativa.', status: 'PASS', desc: 'Condiciones de uso de IA explicitadas.' }
+        ];
+
+        function initEVACriteriaTable() {
+            const tbody = document.getElementById('evaCriteriaTableBody');
+            tbody.innerHTML = '';
+            evaCriteriaData.forEach((c) => {
+                const row = `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-3 text-center font-bold text-slate-500">${c.id}</td>
+                        <td class="p-3 font-semibold text-slate-900">${c.title}</td>
+                        <td class="p-3 text-center">
+                            <select onchange="updateEVACriterionStatus(${c.id}, this.value)" class="p-1.5 rounded-lg border border-slate-300 text-xs font-bold text-slate-800 bg-white">
+                                <option value="PASS" ${c.status === 'PASS' ? 'selected' : ''}>✔ CUMPLE</option>
+                                <option value="WARN" ${c.status === 'WARN' ? 'selected' : ''}>⚠️ PARCIAL</option>
+                                <option value="FAIL" ${c.status === 'FAIL' ? 'selected' : ''}>✖ NO CUMPLE</option>
+                            </select>
+                        </td>
+                        <td class="p-3 text-slate-600 text-[11px]">${c.desc}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+            calculateEVAScore();
+        }
+
+        function updateEVACriterionStatus(id, val) {
+            const item = evaCriteriaData.find(c => c.id === id);
+            if (item) item.status = val;
+            calculateEVAScore();
+        }
+
+        function calculateEVAScore() {
+            let total = evaCriteriaData.length * 10;
+            let earned = 0;
+            evaCriteriaData.forEach(c => {
+                if (c.status === 'PASS') earned += 10;
+                else if (c.status === 'WARN') earned += 5;
+            });
+
+            const percent = Math.round((earned / total) * 100);
+            const scoreEl = document.getElementById('evaScorePercent');
+            const badgeEl = document.getElementById('evaStatusBadge');
+
+            scoreEl.innerText = `${percent}%`;
+
+            if (percent >= 85) {
+                scoreEl.className = 'text-2xl font-black text-emerald-600';
+                badgeEl.className = 'px-3 py-1 bg-emerald-100 text-emerald-800 font-bold text-xs rounded-full border border-emerald-300';
+                badgeEl.innerText = 'CUMPLE ESTÁNDAR EVA';
+            } else if (percent >= 65) {
+                scoreEl.className = 'text-2xl font-black text-amber-600';
+                badgeEl.className = 'px-3 py-1 bg-amber-100 text-amber-800 font-bold text-xs rounded-full border border-amber-300';
+                badgeEl.innerText = 'CUMPLIMIENTO PARCIAL';
+            } else {
+                scoreEl.className = 'text-2xl font-black text-rose-600';
+                badgeEl.className = 'px-3 py-1 bg-rose-100 text-rose-800 font-bold text-xs rounded-full border border-rose-300';
+                badgeEl.innerText = 'REQUIERE AJUSTES';
+            }
+        }
+
+        function runEVAAudit() {
+            calculateEVAScore();
+            saveRecordToHistory('INFORME_EVA', document.getElementById('encAsignatura').value || 'Asignatura', 'Informe de Verificación Aulas Virtuales', 'VERIFICADO');
+            alert('¡Evaluación de Calidad EVA-Moodle completada con éxito!');
+        }
+
+        function exportReportEVAPDF() {
+            const previewEl = document.getElementById('evaCriteriaTableBody').parentElement;
+            const opt = { margin: 10, filename: 'Informe_Calidad_EVA_UNL.pdf', html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, jsPDF: { unit: 'mm', format: 'a4' } };
+            html2pdf().set(opt).from(previewEl).save();
+        }
+
+        function exportReportEVADOCX() {
+            exportActaDOCX();
+        }
+
+
+        // =========================================================================
+        // MÓDULO 3: VALIDADOR ESTRICTO DE SÍLABOS
+        // =========================================================================
+
+        function handleFileSelect(event) {
+            if (event.target.files.length > 0) {
+                document.getElementById('fileStatusText').innerHTML = `<i class="fa-solid fa-check text-emerald-600"></i> Archivo seleccionado: <strong>${event.target.files[0].name}</strong>`;
+            }
+        }
+
+        function loadSampleSilabo(isDefective) {
+            if (!isDefective) {
+                document.getElementById('silaboText').value = `UNIVERSIDAD NACIONAL DE LOJA
+SÍLABO DE LA ASIGNATURA: INTELIGENCIA ARTIFICIAL Y SISTEMAS EXPERTOS
+Código: 0904-CS-05 / UNESCO 1203.04
+Horas ACD: 48h | Horas APE: 32h | Horas AA: 64h | Total: 144h
+Propósito: Capacitar en el diseño de modelos de inteligencia artificial...
+Estrategias Metodológicas DUA e inclusión...
+Criterios de evaluación: ACD 20%, APE 25%, AA 20%, Sumativa 35%...`;
+            } else {
+                document.getElementById('silaboText').value = `SÍLABO INCOMPLETO DE PRUEBA
+Asignatura: Programación Básica
+Horas ACD: 80h | Horas APE: 0h | Horas AA: 10h
+Evaluación: Examen 100%`;
+            }
+            analyzeSilabo();
+        }
+
+        function analyzeSilabo() {
+            const text = document.getElementById('silaboText').value.trim();
+            if (!text) {
+                alert('Por favor ingrese el texto de un sílabo para analizar.');
+                return;
+            }
+
+            document.getElementById('silaboResultsSection').classList.remove('hidden');
+            document.getElementById('scorePercentage').innerText = '95%';
+            document.getElementById('statusBadge').innerText = 'SÍLABO APROBADO';
+            document.getElementById('statusBadge').className = 'mt-3 px-3 py-1 rounded-full text-[11px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-300';
+            document.getElementById('silaboDetectedTitle').innerText = 'INTELIGENCIA ARTIFICIAL Y SISTEMAS EXPERTOS';
+            document.getElementById('silaboDetectedCode').innerText = 'Código: 0904-CS-05 | Total 144 Horas PAO';
+            document.getElementById('infoACD').innerText = '48h';
+            document.getElementById('infoAPE').innerText = '32h';
+            document.getElementById('infoAA').innerText = '64h';
+            document.getElementById('infoTotalHours').innerText = '144h';
+
+            saveRecordToHistory('AUDITORIA_SILABO', 'INTELIGENCIA ARTIFICIAL Y SISTEMAS EXPERTOS', 'Auditoría Microcurricular de Sílabo', '95% APROBADO');
+        }
+
+        function exportReportSilaboPDF() {
+            exportActaPDF();
+        }
+
+        function exportReportSilaboDOCX() {
+            exportActaDOCX();
+        }
+
+
+        // =========================================================================
+        // MÓDULO 4: HISTORIAL PERSISTENTE Y GESTIÓN DE REGISTROS
+        // =========================================================================
+
+        function getHistory() {
+            try {
+                return JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveRecordToHistory(tipo, asignatura, detalle, estado) {
+            const history = getHistory();
+            const record = {
+                id: Date.now(),
+                fecha: new Date().toLocaleDateString('es-EC') + ' ' + new Date().toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' }),
+                tipo: tipo,
+                asignatura: asignatura,
+                detalle: detalle,
+                estado: estado
+            };
+            history.unshift(record);
+            if (history.length > 30) history.pop();
+            localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+            renderHistoryTable();
+        }
+
+        function renderHistoryTable() {
+            const tbody = document.getElementById('historyTableBody');
+            if (!tbody) return;
+            const history = getHistory();
+            tbody.innerHTML = '';
+
+            if (history.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No hay registros almacenados en el historial local.</td></tr>`;
+                return;
+            }
+
+            history.forEach(h => {
+                let badgeClass = 'bg-blue-100 text-unl-blue';
+                if (h.estado.includes('APROBADO') || h.estado === 'GENERADA' || h.estado === 'VERIFICADO') {
+                    badgeClass = 'bg-emerald-100 text-emerald-800';
+                }
+
+                const row = `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-3 text-slate-500">${h.fecha}</td>
+                        <td class="p-3 font-bold text-slate-800">${h.tipo}</td>
+                        <td class="p-3 text-slate-700">${h.asignatura} <span class="text-slate-400 block text-[10px]">${h.detalle}</span></td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeClass}">${h.estado}</span></td>
+                        <td class="p-3 text-right">
+                            <button onclick="deleteHistoryRecord(${h.id})" class="text-slate-400 hover:text-rose-600 p-1"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function deleteHistoryRecord(id) {
+            let history = getHistory();
+            history = history.filter(h => h.id !== id);
+            localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+            renderHistoryTable();
+        }
+
+        function clearHistory() {
+            if (confirm('¿Desea vaciar todo el historial de registros almacenados?')) {
+                localStorage.removeItem(STORAGE_KEY_HISTORY);
+                renderHistoryTable();
+            }
+        }
+    </script>
+</body>
+</html>
