@@ -127,6 +127,50 @@
     <!-- MAIN CONTENT CONTAINER -->
     <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full space-y-6">
 
+        <!-- BANNER DE CONFIGURACIÓN DE IA GOOGLE GEMINI (gemini-flash-lite-latest) -->
+        <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-2xl p-5 shadow-lg border border-indigo-700/50 space-y-3">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center text-xl shrink-0 border border-amber-500/30">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold flex items-center gap-2">
+                            Procesador Inteligente con Google Gemini AI
+                            <span class="text-[10px] bg-amber-500/20 text-amber-300 px-2.5 py-0.5 rounded-full border border-amber-500/30 uppercase font-mono font-bold">gemini-flash-lite-latest</span>
+                        </h3>
+                        <p class="text-xs text-indigo-200">
+                            Extracción microcurricular de sílabos, auto-completado de acuerdos e informes DUA impulsados por la API de Google Gemini.
+                        </p>
+                    </div>
+                </div>
+                <div id="geminiStatusBadge" class="px-3 py-1 bg-slate-800 text-slate-300 text-xs font-bold rounded-full border border-slate-700 flex items-center gap-1.5 shrink-0">
+                    <i class="fa-solid fa-circle text-[9px] text-slate-500"></i> Sin API Key
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 pt-2 border-t border-indigo-800/60 items-center">
+                <div class="md:col-span-8 flex gap-2">
+                    <div class="relative w-full">
+                        <input type="password" id="geminiApiKeyInput" placeholder="Ingrese su Google Gemini API Key aquí (AI Studio)..." class="w-full pl-9 pr-10 py-2 rounded-xl bg-slate-950/80 border border-indigo-600/50 text-xs font-mono text-white focus:ring-2 focus:ring-amber-400 focus:outline-none placeholder-slate-400">
+                        <i class="fa-solid fa-key absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                        <button type="button" onclick="toggleApiKeyVisibility()" class="absolute right-3 top-2.5 text-slate-400 hover:text-white text-xs">
+                            <i id="toggleApiKeyIcon" class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <button onclick="saveGeminiApiKey()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-xl text-xs shadow transition flex items-center gap-1.5 shrink-0">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar Key
+                    </button>
+                </div>
+                <div class="md:col-span-4 flex justify-end gap-2 text-[11px] text-indigo-200">
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" class="hover:text-amber-300 underline flex items-center gap-1 font-bold">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Obtener Key Gratis en Google AI Studio
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
         <!-- ========================================================================= -->
         <!-- PESTAÑA 1: AUTOMATIZACIÓN DEL ACTA DE ENCUADRE (PLANTILLA UNIFICADA) -->
         <!-- ========================================================================= -->
@@ -218,9 +262,14 @@
                             <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
                                 <i class="fa-solid fa-list-check text-unl-blue"></i> Acuerdos Específicos Adicionales
                             </h3>
-                            <button onclick="addAcuerdoRow()" class="px-2.5 py-1 bg-unl-blue text-white rounded-lg text-xs font-bold hover:bg-blue-900 transition flex items-center gap-1">
-                                <i class="fa-solid fa-plus"></i> Añadir
-                            </button>
+                            <div class="flex gap-2">
+                                <button onclick="suggestAcuerdosWithGemini()" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1">
+                                    <i class="fa-solid fa-brain"></i> Sugerir con IA Gemini
+                                </button>
+                                <button onclick="addAcuerdoRow()" class="px-2.5 py-1 bg-unl-blue text-white rounded-lg text-xs font-bold hover:bg-blue-900 transition flex items-center gap-1">
+                                    <i class="fa-solid fa-plus"></i> Añadir
+                                </button>
+                            </div>
                         </div>
 
                         <p class="text-[11px] text-slate-500">Compromisos particulares acordados en la sesión (ej. entregas a medianoche, uso de Discord/GitHub, reglas de puntualidad, etc.):</p>
@@ -412,9 +461,14 @@
                         Verifique la correspondencia de su aula virtual con los <strong>14 criterios normativos</strong> del manual institucional y genere el <strong>Informe Verificable para el Portafolio Docente</strong>.
                     </p>
                 </div>
-                <button onclick="runEVAAudit()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-2">
-                    <i class="fa-solid fa-square-check"></i> Evaluar Aula EVA Ahora
-                </button>
+                <div class="flex gap-2 flex-wrap">
+                    <button onclick="analyzeEVAWithGemini()" class="px-4 py-2.5 bg-indigo-700 hover:bg-indigo-800 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-brain"></i> Sugerencias DUA con IA (Gemini)
+                    </button>
+                    <button onclick="runEVAAudit()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-square-check"></i> Evaluar Aula EVA Ahora
+                    </button>
+                </div>
             </div>
 
             <!-- MATRIZ AUDITORA DE 14 CRITERIOS EVA MOODLE -->
@@ -570,9 +624,14 @@
                     <span id="fileStatusText" class="text-xs text-slate-500 flex items-center gap-1">
                         <i class="fa-solid fa-info-circle"></i> Listo para analizar.
                     </span>
-                    <button onclick="analyzeSilabo()" class="px-6 py-2.5 bg-unl-blue hover:bg-blue-900 text-white rounded-xl text-xs font-extrabold shadow transition flex items-center gap-2">
-                        <i class="fa-solid fa-shield-halved"></i> Ejecutar Auditoría Estricta
-                    </button>
+                    <div class="flex gap-2 flex-wrap">
+                        <button onclick="analyzeSilaboWithGemini()" class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 rounded-xl text-xs font-extrabold shadow transition flex items-center gap-2">
+                            <i class="fa-solid fa-brain"></i> Procesar con IA Gemini (gemini-flash-lite-latest)
+                        </button>
+                        <button onclick="analyzeSilabo()" class="px-5 py-2.5 bg-unl-blue hover:bg-blue-900 text-white rounded-xl text-xs font-extrabold shadow transition flex items-center gap-2">
+                            <i class="fa-solid fa-shield-halved"></i> Auditoría Estándar
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -708,6 +767,7 @@
             initEVACriteriaTable();
             renderHistoryTable();
             initDragAndDrop();
+            updateGeminiStatusUI();
         });
 
         function addAcuerdoRow() {
@@ -1662,6 +1722,277 @@ Evaluación: Examen 100%`;
                 renderHistoryTable();
             }
         }
+    
+        // =========================================================================
+        // MÓDULO GOOGLE GEMINI AI ENGINE (Modelo Exclusivo: gemini-flash-lite-latest)
+        // =========================================================================
+        const GEMINI_MODEL = 'gemini-flash-lite-latest';
+        const STORAGE_KEY_GEMINI_KEY = 'unl_academic_gemini_api_key_v1';
+
+        function getGeminiApiKey() {
+            return localStorage.getItem(STORAGE_KEY_GEMINI_KEY) || '';
+        }
+
+        function saveGeminiApiKey() {
+            const input = document.getElementById('geminiApiKeyInput');
+            const key = input ? input.value.trim() : '';
+            if (!key) {
+                localStorage.removeItem(STORAGE_KEY_GEMINI_KEY);
+                updateGeminiStatusUI();
+                alert('API Key de Gemini removida.');
+                return;
+            }
+            localStorage.setItem(STORAGE_KEY_GEMINI_KEY, key);
+            updateGeminiStatusUI();
+            alert(`¡API Key guardada con éxito! Motor Google Gemini (${GEMINI_MODEL}) listo para usar.`);
+        }
+
+        function updateGeminiStatusUI() {
+            const key = getGeminiApiKey();
+            const badge = document.getElementById('geminiStatusBadge');
+            const input = document.getElementById('geminiApiKeyInput');
+
+            if (input && key) {
+                input.value = key;
+            }
+
+            if (badge) {
+                if (key) {
+                    badge.className = 'px-3 py-1 bg-emerald-950/90 text-emerald-300 text-xs font-bold rounded-full border border-emerald-500/60 flex items-center gap-1.5 shrink-0 shadow-sm';
+                    badge.innerHTML = `<i class="fa-solid fa-circle text-[9px] text-emerald-400 animate-pulse"></i> Gemini AI Activo (${GEMINI_MODEL})`;
+                } else {
+                    badge.className = 'px-3 py-1 bg-slate-800 text-slate-300 text-xs font-bold rounded-full border border-slate-700 flex items-center gap-1.5 shrink-0';
+                    badge.innerHTML = `<i class="fa-solid fa-circle text-[9px] text-slate-500"></i> Sin API Key (${GEMINI_MODEL})`;
+                }
+            }
+        }
+
+        function toggleApiKeyVisibility() {
+            const input = document.getElementById('geminiApiKeyInput');
+            const icon = document.getElementById('toggleApiKeyIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye';
+            }
+        }
+
+        async function callGeminiApi(promptText) {
+            const apiKey = getGeminiApiKey();
+            if (!apiKey) {
+                alert(`⚠️ Se requiere configurar su API Key de Google Gemini (${GEMINI_MODEL}).\n\nPor favor ingrésela en la barra superior ("Procesador Inteligente con Google Gemini AI") y haga clic en "Guardar Key".`);
+                throw new Error('API Key no configurada');
+            }
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [
+                        {
+                            parts: [
+                                { text: promptText }
+                            ]
+                        }
+                    ]
+                })
+            });
+
+            if (!response.ok) {
+                const errorObj = await response.json().catch(() => ({}));
+                const msg = errorObj.error?.message || response.statusText;
+                throw new Error(`Error en API Gemini (${GEMINI_MODEL}): ${msg}`);
+            }
+
+            const data = await response.json();
+            const textResult = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!textResult) {
+                throw new Error(`Respuesta vacía del modelo ${GEMINI_MODEL}`);
+            }
+            return textResult;
+        }
+
+        let lastParsedGeminiSilabo = null;
+
+        async function analyzeSilaboWithGemini() {
+            const silaboText = document.getElementById('silaboText').value.trim();
+            if (!silaboText) {
+                alert('Por favor cargue un archivo o pegue el contenido del sílabo antes de procesar con Gemini.');
+                return;
+            }
+
+            const statusText = document.getElementById('fileStatusText');
+            statusText.innerHTML = `<i class="fa-solid fa-brain fa-spin text-amber-500"></i> Procesando sílabo con IA Google Gemini (${GEMINI_MODEL})...`;
+
+            const prompt = `Eres un auditor microcurricular experto de la Universidad Nacional de Loja (UNL), Carrera de Computación.
+Analiza el siguiente texto de un Sílabo universitario y extrae los datos clave. 
+Responde ÚNICAMENTE un objeto JSON válido (sin bloques de código markdown, sin explicaciones antes o después) con el siguiente formato exacto:
+
+{
+  "asignatura": "Nombre completo de la asignatura",
+  "codigo": "Código oficial o UNESCO",
+  "cicloParalelo": "Ej. 7mo Ciclo, Paralelo A",
+  "docente": "Nombre del docente",
+  "pao": "Ej. Septiembre 2026 - Marzo 2027",
+  "horasACD": 48,
+  "horasAPE": 32,
+  "horasAA": 64,
+  "horasTotal": 144,
+  "evaluacionACD": 20,
+  "evaluacionAPE": 25,
+  "evaluacionAA": 20,
+  "evaluacionSumativa": 35,
+  "score": 95,
+  "estado": "SÍLABO APROBADO CON EXCELENCIA",
+  "fortalezas": ["Fortaleza 1 detectada", "Fortaleza 2 detectada"],
+  "observaciones": ["Observación 1", "Observación 2"],
+  "recomendaciones": ["Recomendación 1 para mejora microcurricular"]
+}
+
+TEXTO DEL SÍLABO:
+"""
+${silaboText}
+"""`;
+
+            try {
+                const rawResponse = await callGeminiApi(prompt);
+                // Limpiar JSON si viene envuelto en markdown ```json ... ```
+                let jsonStr = rawResponse.trim();
+                if (jsonStr.startsWith('```')) {
+                    jsonStr = jsonStr.replace(/^```[a-z]*\n/, '').replace(/\n```$/, '').trim();
+                }
+
+                const data = JSON.parse(jsonStr);
+                lastParsedGeminiSilabo = data;
+
+                // Actualizar interfaz con los resultados procesados por Gemini
+                document.getElementById('silaboResultsSection').classList.remove('hidden');
+                document.getElementById('scorePercentage').innerText = `${data.score || 90}%`;
+                document.getElementById('statusBadge').innerText = data.estado || 'AUDITADO CON IA';
+                document.getElementById('statusBadge').className = 'mt-3 px-3 py-1 rounded-full text-[11px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-300';
+                
+                document.getElementById('silaboDetectedTitle').innerText = data.asignatura || 'ASIGNATURA DETECTADA';
+                document.getElementById('silaboDetectedCode').innerText = `Código: ${data.codigo || 'N/A'} | Docente: ${data.docente || 'N/A'} | Total ${data.horasTotal || 144}h`;
+                
+                document.getElementById('infoACD').innerText = `${data.horasACD || 48}h`;
+                document.getElementById('infoAPE').innerText = `${data.horasAPE || 32}h`;
+                document.getElementById('infoAA').innerText = `${data.horasAA || 64}h`;
+                document.getElementById('infoTotalHours').innerText = `${data.horasTotal || 144}h`;
+
+                // Renderizar tarjetas de hallazgos IA
+                const cardsContainer = document.getElementById('auditCardsContainer');
+                let cardsHtml = `
+                    <div class="bg-gradient-to-r from-amber-500/10 to-indigo-500/10 p-4 rounded-xl border border-amber-500/30 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="font-extrabold text-xs text-amber-900 flex items-center gap-1.5">
+                                <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> Análisis Microcurricular generado por Gemini (${GEMINI_MODEL})
+                            </span>
+                            <button onclick="transferSilaboToEncuadre()" class="px-3 py-1.5 bg-unl-blue text-white text-xs font-bold rounded-lg shadow hover:bg-blue-900 transition flex items-center gap-1">
+                                <i class="fa-solid fa-arrow-right-to-bracket"></i> Transferir Datos al Acta de Encuadre
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                            <div class="bg-white p-3 rounded-lg border border-slate-200">
+                                <strong class="text-emerald-700 block mb-1">✔ Fortalezas:</strong>
+                                <ul class="list-disc list-inside text-slate-600 space-y-1">
+                                    ${(data.fortalezas || ['Cumple estructura normada']).map(f => `<li>${f}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="bg-white p-3 rounded-lg border border-slate-200">
+                                <strong class="text-amber-700 block mb-1">⚠️ Observaciones:</strong>
+                                <ul class="list-disc list-inside text-slate-600 space-y-1">
+                                    ${(data.observaciones || ['Verificar rúbricas DUA']).map(o => `<li>${o}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="bg-white p-3 rounded-lg border border-slate-200">
+                                <strong class="text-blue-700 block mb-1">💡 Recomendaciones:</strong>
+                                <ul class="list-disc list-inside text-slate-600 space-y-1">
+                                    ${(data.recomendaciones || ['Incorporar guías APE en EVA']).map(r => `<li>${r}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                cardsContainer.innerHTML = cardsHtml;
+
+                statusText.innerHTML = `<i class="fa-solid fa-check text-emerald-600"></i> Auditoría completada con éxito vía Gemini AI (${GEMINI_MODEL}).`;
+                saveRecordToHistory('AUDITORIA_IA_GEMINI', data.asignatura || 'Sílabo UNL', `Procesado con ${GEMINI_MODEL}`, `${data.score}% APROBADO`);
+
+            } catch (err) {
+                console.error(err);
+                statusText.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-rose-600"></i> Error en procesamiento Gemini: ${err.message}`;
+            }
+        }
+
+        function transferSilaboToEncuadre() {
+            if (!lastParsedGeminiSilabo) {
+                alert('Primero ejecute el procesamiento de sílabo con Gemini.');
+                return;
+            }
+            const d = lastParsedGeminiSilabo;
+            if (d.asignatura) document.getElementById('encAsignatura').value = d.asignatura;
+            if (d.codigo) document.getElementById('encCodigo').value = d.codigo;
+            if (d.cicloParalelo) document.getElementById('encCicloParalelo').value = d.cicloParalelo;
+            if (d.docente) document.getElementById('encDocente').value = d.docente;
+            if (d.pao) document.getElementById('encPAO').value = d.pao;
+
+            if (d.evaluacionACD) document.getElementById('evalACD').value = d.evaluacionACD;
+            if (d.evaluacionAPE) document.getElementById('evalAPE').value = d.evaluacionAPE;
+            if (d.evaluacionAA) document.getElementById('evalAA').value = d.evaluacionAA;
+            if (d.evaluacionSumativa) document.getElementById('evalSum').value = d.evaluacionSumativa;
+
+            generateActaAndResources();
+            switchTab('encuadre');
+            alert('¡Los datos extraídos por Gemini AI han sido transferidos exitosamente al Acta de Encuadre!');
+        }
+
+        async function suggestAcuerdosWithGemini() {
+            const asig = document.getElementById('encAsignatura').value || 'Asignatura Universitaria';
+            const prompt = `Eres un docente universitario experto de la Carrera de Computación de la Universidad Nacional de Loja.
+Genera 3 acuerdos o compromisos específicos idóneos y profesionales para el Acta de Encuadre de la asignatura: "${asig}".
+Responde ÚNICAMENTE un arreglo JSON válido (sin markdown) de 3 objetos con este formato:
+[
+  {"acuerdo": "Texto del acuerdo específico...", "responsable": "Estudiantes"},
+  {"acuerdo": "Texto del acuerdo específico...", "responsable": "Docente"},
+  {"acuerdo": "Texto del acuerdo específico...", "responsable": "Docente y Estudiantes"}
+]`;
+
+            try {
+                alert(`Solicitando sugerencias de acuerdos a Gemini AI (${GEMINI_MODEL})...`);
+                const rawResponse = await callGeminiApi(prompt);
+                let jsonStr = rawResponse.trim();
+                if (jsonStr.startsWith('```')) {
+                    jsonStr = jsonStr.replace(/^```[a-z]*\n/, '').replace(/\n```$/, '').trim();
+                }
+                const newAcuerdos = JSON.parse(jsonStr);
+                newAcuerdos.forEach(item => {
+                    acuerdosList.push({ id: Date.now() + Math.random(), acuerdo: item.acuerdo, responsable: item.responsable });
+                });
+                renderAcuerdosRows();
+                updateActaPreview();
+                alert('¡3 acuerdos sugeridos por Gemini AI han sido agregados!');
+            } catch (err) {
+                alert(`Error al generar acuerdos: ${err.message}`);
+            }
+        }
+
+        async function analyzeEVAWithGemini() {
+            const prompt = `Como auditor pedagógico de la UNL, genera 3 recomendaciones estratégicas para optimizar el Aula Virtual EVA-Moodle de la Carrera de Computación bajo el enfoque DUA (Diseño Universal para el Aprendizaje) e inclusión.
+Responde de forma concisa en 3 viñetas descriptivas en formato de texto plano.`;
+
+            try {
+                alert(`Generando sugerencias DUA e inclusión con Gemini AI (${GEMINI_MODEL})...`);
+                const text = await callGeminiApi(prompt);
+                alert(`💡 SUGERENCIAS PEDAGÓGICAS DUA GENERADAS POR GEMINI (${GEMINI_MODEL}):\n\n${text}`);
+            } catch (err) {
+                alert(`Error al generar sugerencias: ${err.message}`);
+            }
+        }
+
     </script>
 </body>
 </html>
