@@ -98,7 +98,10 @@
                     <p class="text-xs text-blue-200">Carrera de Computación • FEIRNNR • Universidad Nacional de Loja</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap justify-end">
+                <button onclick="openGeminiConfigModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold px-3.5 py-1.5 rounded-full text-xs shadow-md transition flex items-center gap-1.5 border border-amber-300">
+                    <i class="fa-solid fa-key"></i> Configurar API Key Gemini
+                </button>
                 <span class="text-[11px] bg-emerald-600/90 text-white font-bold px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-check-double"></i> Manual Encuadre v2 + EVA-Moodle
                 </span>
@@ -1117,7 +1120,51 @@ ${doc}`;
                 </head>
                 <body>
                     ${containerHtml}
-                </body>
+                
+    <!-- MODAL DE CONFIGURACIÓN API KEY GEMINI -->
+    <div id="geminiModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 text-white rounded-2xl p-6 max-w-lg w-full border border-indigo-500/40 shadow-2xl space-y-4 relative">
+            <button onclick="closeGeminiConfigModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1 text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-3 border-b border-indigo-900/60 pb-3">
+                <div class="w-10 h-10 bg-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center text-xl shrink-0 border border-amber-500/30">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-extrabold text-white">Configurar Google Gemini API Key</h3>
+                    <p class="text-xs text-indigo-200">Modelo de procesamiento: <span class="font-mono text-amber-400 font-bold">gemini-flash-lite-latest</span></p>
+                </div>
+            </div>
+
+            <p class="text-xs text-slate-300 leading-relaxed">
+                Pegue aquí su <strong>Google Gemini API Key</strong> para habilitar las funciones de Inteligencia Artificial (procesamiento automático de sílabos, acuerdos e informes DUA).
+            </p>
+
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-slate-200 block">Google Gemini API Key:</label>
+                <div class="relative">
+                    <input type="password" id="geminiModalApiKeyInput" placeholder="AIzaSy..." class="w-full pl-9 pr-10 py-2.5 rounded-xl bg-slate-950 border border-indigo-500/50 text-xs font-mono text-white focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                    <i class="fa-solid fa-key absolute left-3 top-3 text-slate-400 text-xs"></i>
+                    <button type="button" onclick="toggleModalApiKeyVisibility()" class="absolute right-3 top-3 text-slate-400 hover:text-white text-xs">
+                        <i id="toggleModalApiKeyIcon" class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center pt-2">
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-xs text-amber-400 hover:underline flex items-center gap-1 font-bold">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Obtener Key Gratis en Google AI Studio
+                </a>
+                <button onclick="saveGeminiApiKeyFromModal()" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-xl text-xs shadow-lg transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar y Activar
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
                 </html>
             `;
 
@@ -1166,7 +1213,51 @@ ${doc}`;
                 </head>
                 <body>
                     ${containerHtml}
-                </body>
+                
+    <!-- MODAL DE CONFIGURACIÓN API KEY GEMINI -->
+    <div id="geminiModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 text-white rounded-2xl p-6 max-w-lg w-full border border-indigo-500/40 shadow-2xl space-y-4 relative">
+            <button onclick="closeGeminiConfigModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1 text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-3 border-b border-indigo-900/60 pb-3">
+                <div class="w-10 h-10 bg-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center text-xl shrink-0 border border-amber-500/30">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-extrabold text-white">Configurar Google Gemini API Key</h3>
+                    <p class="text-xs text-indigo-200">Modelo de procesamiento: <span class="font-mono text-amber-400 font-bold">gemini-flash-lite-latest</span></p>
+                </div>
+            </div>
+
+            <p class="text-xs text-slate-300 leading-relaxed">
+                Pegue aquí su <strong>Google Gemini API Key</strong> para habilitar las funciones de Inteligencia Artificial (procesamiento automático de sílabos, acuerdos e informes DUA).
+            </p>
+
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-slate-200 block">Google Gemini API Key:</label>
+                <div class="relative">
+                    <input type="password" id="geminiModalApiKeyInput" placeholder="AIzaSy..." class="w-full pl-9 pr-10 py-2.5 rounded-xl bg-slate-950 border border-indigo-500/50 text-xs font-mono text-white focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                    <i class="fa-solid fa-key absolute left-3 top-3 text-slate-400 text-xs"></i>
+                    <button type="button" onclick="toggleModalApiKeyVisibility()" class="absolute right-3 top-3 text-slate-400 hover:text-white text-xs">
+                        <i id="toggleModalApiKeyIcon" class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center pt-2">
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-xs text-amber-400 hover:underline flex items-center gap-1 font-bold">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Obtener Key Gratis en Google AI Studio
+                </a>
+                <button onclick="saveGeminiApiKeyFromModal()" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-xl text-xs shadow-lg transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar y Activar
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
                 </html>
             `;
 
@@ -1779,11 +1870,52 @@ Evaluación: Examen 100%`;
             }
         }
 
+        
+        function openGeminiConfigModal() {
+            const modal = document.getElementById('geminiModal');
+            const input = document.getElementById('geminiModalApiKeyInput');
+            if (input) input.value = getGeminiApiKey();
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeGeminiConfigModal() {
+            const modal = document.getElementById('geminiModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function saveGeminiApiKeyFromModal() {
+            const input = document.getElementById('geminiModalApiKeyInput');
+            const key = input ? input.value.trim() : '';
+            if (!key) {
+                localStorage.removeItem(STORAGE_KEY_GEMINI_KEY);
+                updateGeminiStatusUI();
+                closeGeminiConfigModal();
+                alert('API Key de Gemini removida.');
+                return;
+            }
+            localStorage.setItem(STORAGE_KEY_GEMINI_KEY, key);
+            updateGeminiStatusUI();
+            closeGeminiConfigModal();
+            alert(`¡API Key guardada con éxito! Motor Google Gemini (${GEMINI_MODEL}) activado.`);
+        }
+
+        function toggleModalApiKeyVisibility() {
+            const input = document.getElementById('geminiModalApiKeyInput');
+            const icon = document.getElementById('toggleModalApiKeyIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye';
+            }
+        }
+
         async function callGeminiApi(promptText) {
             const apiKey = getGeminiApiKey();
             if (!apiKey) {
-                alert(`⚠️ Se requiere configurar su API Key de Google Gemini (${GEMINI_MODEL}).\n\nPor favor ingrésela en la barra superior ("Procesador Inteligente con Google Gemini AI") y haga clic en "Guardar Key".`);
-                throw new Error('API Key no configurada');
+                openGeminiConfigModal();
+                throw new Error('API Key de Google Gemini no configurada.');
             }
 
             const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
@@ -1994,5 +2126,49 @@ Responde de forma concisa en 3 viñetas descriptivas en formato de texto plano.`
         }
 
     </script>
+
+    <!-- MODAL DE CONFIGURACIÓN API KEY GEMINI -->
+    <div id="geminiModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 text-white rounded-2xl p-6 max-w-lg w-full border border-indigo-500/40 shadow-2xl space-y-4 relative">
+            <button onclick="closeGeminiConfigModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1 text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-3 border-b border-indigo-900/60 pb-3">
+                <div class="w-10 h-10 bg-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center text-xl shrink-0 border border-amber-500/30">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-extrabold text-white">Configurar Google Gemini API Key</h3>
+                    <p class="text-xs text-indigo-200">Modelo de procesamiento: <span class="font-mono text-amber-400 font-bold">gemini-flash-lite-latest</span></p>
+                </div>
+            </div>
+
+            <p class="text-xs text-slate-300 leading-relaxed">
+                Pegue aquí su <strong>Google Gemini API Key</strong> para habilitar las funciones de Inteligencia Artificial (procesamiento automático de sílabos, acuerdos e informes DUA).
+            </p>
+
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-slate-200 block">Google Gemini API Key:</label>
+                <div class="relative">
+                    <input type="password" id="geminiModalApiKeyInput" placeholder="AIzaSy..." class="w-full pl-9 pr-10 py-2.5 rounded-xl bg-slate-950 border border-indigo-500/50 text-xs font-mono text-white focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                    <i class="fa-solid fa-key absolute left-3 top-3 text-slate-400 text-xs"></i>
+                    <button type="button" onclick="toggleModalApiKeyVisibility()" class="absolute right-3 top-3 text-slate-400 hover:text-white text-xs">
+                        <i id="toggleModalApiKeyIcon" class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center pt-2">
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-xs text-amber-400 hover:underline flex items-center gap-1 font-bold">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Obtener Key Gratis en Google AI Studio
+                </a>
+                <button onclick="saveGeminiApiKeyFromModal()" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-xl text-xs shadow-lg transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar y Activar
+                </button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
