@@ -20,7 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.min.js"></script>
 
     <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        if (typeof pdfjsLib !== 'undefined') { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; }
 
         tailwind.config = {
             theme: {
@@ -164,50 +164,50 @@
                         <div class="space-y-3 text-xs">
                             <div>
                                 <label class="font-bold text-slate-700 block mb-1">Nombre de la Asignatura *</label>
-                                <input type="text" id="encAsignatura" placeholder="Ej. Inteligencia Artificial y Sistemas Expertos" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue">
+                                <input type="text" id="encAsignatura" placeholder="Ej. Inteligencia Artificial y Sistemas Expertos" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue" oninput="updateActaPreview()">
                             </div>
 
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
                                     <label class="font-bold text-slate-700 block mb-1">Código *</label>
-                                    <input type="text" id="encCodigo" placeholder="Ej. 0904-CS-05" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue">
+                                    <input type="text" id="encCodigo" placeholder="Ej. 0904-CS-05" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue" oninput="updateActaPreview()">
                                 </div>
                                 <div>
                                     <label class="font-bold text-slate-700 block mb-1">Ciclo / Paralelo *</label>
-                                    <input type="text" id="encCicloParalelo" placeholder="Ej. 7mo Ciclo, Paralelo A" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue">
+                                    <input type="text" id="encCicloParalelo" placeholder="Ej. 7mo Ciclo, Paralelo A" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue" oninput="updateActaPreview()">
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
                                     <label class="font-bold text-slate-700 block mb-1">Docente Responsable *</label>
-                                    <input type="text" id="encDocente" placeholder="Ej. Sra. Valeria Del Rosario Herrera Salazar" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue">
+                                    <input type="text" id="encDocente" placeholder="Ej. Sra. Valeria Del Rosario Herrera Salazar" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue" oninput="updateActaPreview()">
                                 </div>
                                 <div>
                                     <label class="font-bold text-slate-700 block mb-1">Período Académico (PAO) *</label>
-                                    <input type="text" id="encPAO" value="Septiembre 2026 - Marzo 2027" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue">
+                                    <input type="text" id="encPAO" value="Septiembre 2026 - Marzo 2027" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue" oninput="updateActaPreview()">
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
                                     <label class="font-bold text-slate-700 block mb-1">Fecha de Sesión *</label>
-                                    <input type="date" id="encFecha" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue">
+                                    <input type="date" id="encFecha" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue" oninput="updateActaPreview()">
                                 </div>
                                 <div>
                                     <label class="font-bold text-slate-700 block mb-1">Hora de Inicio *</label>
-                                    <input type="time" id="encHora" value="08:00" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue">
+                                    <input type="time" id="encHora" value="08:00" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue" oninput="updateActaPreview()">
                                 </div>
                             </div>
 
                             <div>
                                 <label class="font-bold text-slate-700 block mb-1">Horario de Clases Presenciales *</label>
-                                <input type="text" id="encHorario" placeholder="Ej. Lunes y Miércoles 08:00 - 10:00" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue">
+                                <input type="text" id="encHorario" placeholder="Ej. Lunes y Miércoles 08:00 - 10:00" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue" oninput="updateActaPreview()">
                             </div>
 
                             <div>
                                 <label class="font-bold text-slate-700 block mb-1">Horario de Tutorías Académicas *</label>
-                                <input type="text" id="encTutorias" placeholder="Ej. Jueves 10:00 - 12:00 (Cubículo 12 / Zoom)" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue">
+                                <input type="text" id="encTutorias" placeholder="Ej. Jueves 10:00 - 12:00 (Cubículo 12 / Zoom)" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-unl-blue" oninput="updateActaPreview()">
                             </div>
                         </div>
                     </div>
@@ -264,11 +264,11 @@
                                 <span class="font-bold text-slate-800 block">Evaluación Diagnóstica (Primera Semana)</span>
                                 <div>
                                     <label class="text-slate-600 block mb-1">Instrumento Aplicado</label>
-                                    <input type="text" id="diagInstrumento" value="Tutorías de refuerzo, lecturas complementarias y ejercicios de nivelación" class="w-full p-2 rounded-lg border border-slate-300">
+                                    <input type="text" id="diagInstrumento" value="Tutorías de refuerzo, lecturas complementarias y ejercicios de nivelación" class="w-full p-2 rounded-lg border border-slate-300" oninput="updateActaPreview()">
                                 </div>
                                 <div>
                                     <label class="text-slate-600 block mb-1">Saberes a Reforzar / Acciones</label>
-                                    <input type="text" id="diagSaberes" value="Conceptos de ética general, deontología profesional, dilemas éticos tecnológicos y marco legal informático" class="w-full p-2 rounded-lg border border-slate-300">
+                                    <input type="text" id="diagSaberes" value="Conceptos de ética general, deontología profesional, dilemas éticos tecnológicos y marco legal informático" class="w-full p-2 rounded-lg border border-slate-300" oninput="updateActaPreview()">
                                 </div>
                             </div>
                         </div>
@@ -553,7 +553,7 @@
 
             <!-- CARGA DE SÍLABO -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
-                <div id="dropZone" class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center bg-slate-50 hover:bg-slate-100 transition cursor-pointer relative">
+                <div id="dropZone" onclick="document.getElementById('fileInput').click()" class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center bg-slate-50 hover:bg-slate-100 transition cursor-pointer relative">
                     <input type="file" id="fileInput" accept=".pdf, .docx, .txt" class="hidden" onchange="handleFileSelect(event)">
                     <div class="space-y-2">
                         <div class="w-12 h-12 bg-blue-50 text-unl-blue rounded-full flex items-center justify-center mx-auto text-xl shadow-inner">
@@ -699,12 +699,15 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Set default date to today
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('encFecha').value = today;
+            if (document.getElementById('encFecha')) {
+                document.getElementById('encFecha').value = today;
+            }
 
             renderAcuerdosRows();
             updateActaPreview();
             initEVACriteriaTable();
             renderHistoryTable();
+            initDragAndDrop();
         });
 
         function addAcuerdoRow() {
@@ -983,37 +986,42 @@ ${doc}`;
         // =========================================================================
         function exportActaPDF() {
             updateActaPreview();
-            const previewEl = document.getElementById('actaPreviewContainer');
-            const scrollParent = document.getElementById('actaParentScrollContainer');
             const asig = (document.getElementById('encAsignatura').value || 'Asignatura').replace(/[^a-zA-Z0-9]/g, '_');
             const fileName = `Acta_Encuadre_${asig}_UNL.pdf`;
+            const previewEl = document.getElementById('actaPreviewContainer');
 
-            // Guardar estilos de desbordamiento originales
-            const origMaxHeight = scrollParent.style.maxHeight;
-            const origOverflow = scrollParent.style.overflow;
-
-            // Expandir temporalmente el contenedor para que html2canvas capture todo el contenido visible sin recortar
-            scrollParent.style.maxHeight = 'none';
-            scrollParent.style.overflow = 'visible';
+            // Clona el contenedor para un renderizado aislado offscreen sin problemas de scroll o pantalla
+            const clone = previewEl.cloneNode(true);
+            clone.style.width = '794px';
+            clone.style.margin = '0';
+            clone.style.padding = '20px';
+            clone.style.position = 'absolute';
+            clone.style.left = '-9999px';
+            clone.style.top = '0';
+            clone.style.background = '#ffffff';
+            document.body.appendChild(clone);
 
             const opt = {
-                margin:       [10, 10, 12, 10], // arriba, izquierda, abajo, derecha (mm)
+                margin:       [10, 10, 12, 10],
                 filename:     fileName,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, scrollY: 0, logging: false },
+                html2canvas:  { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 800, logging: false },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
                 pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
             };
 
-            html2pdf().set(opt).from(previewEl).save().then(() => {
-                // Restaurar estilos de desbordamiento
-                scrollParent.style.maxHeight = origMaxHeight;
-                scrollParent.style.overflow = origOverflow;
-            }).catch(err => {
-                console.error('Error al generar PDF:', err);
-                scrollParent.style.maxHeight = origMaxHeight;
-                scrollParent.style.overflow = origOverflow;
-            });
+            if (typeof html2pdf !== 'undefined') {
+                html2pdf().set(opt).from(clone).save().then(() => {
+                    document.body.removeChild(clone);
+                }).catch(err => {
+                    console.error('Error al generar PDF:', err);
+                    if (clone.parentNode) clone.parentNode.removeChild(clone);
+                    alert('Hubo un inconveniente al generar el PDF. Por favor intente nuevamente.');
+                });
+            } else {
+                alert('La librería html2pdf no está cargada. Verifique su conexión a internet.');
+                document.body.removeChild(clone);
+            }
         }
 
         // =========================================================================
@@ -1212,14 +1220,118 @@ ${doc}`;
             alert('¡Evaluación de Calidad EVA-Moodle completada con éxito!');
         }
 
+        function generateEVAReportHTML() {
+            const asig = document.getElementById('encAsignatura').value || 'Inteligencia Artificial y Sistemas Expertos';
+            const doc = document.getElementById('encDocente').value || 'Docente Responsable';
+            const pao = document.getElementById('encPAO').value || 'Septiembre 2026 - Marzo 2027';
+            const score = document.getElementById('evaScorePercent').innerText || '100%';
+            const status = document.getElementById('evaStatusBadge').innerText || 'CUMPLE ESTÁNDAR';
+
+            let criteriaRows = '';
+            evaCriteriaData.forEach(c => {
+                const badgeColor = c.status === 'PASS' ? '#059669' : (c.status === 'WARN' ? '#d97706' : '#dc2626');
+                const badgeLabel = c.status === 'PASS' ? '✔ CUMPLE' : (c.status === 'WARN' ? '⚠️ PARCIAL' : '✖ NO CUMPLE');
+                criteriaRows += `
+                    <tr>
+                        <td style="border: 1px solid #cbd5e1; padding: 5px; text-align: center; font-weight: bold;">${c.id}</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 5px; font-weight: bold;">${c.title}</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 5px; text-align: center; font-weight: bold; color: ${badgeColor};">${badgeLabel}</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 5px; font-size: 8pt; color: #475569;">${c.desc}</td>
+                    </tr>
+                `;
+            });
+
+            return `
+                <div style="font-family: Arial, sans-serif; padding: 20px; color: #0f172a; max-width: 800px; margin: 0 auto; background: white;">
+                    <div style="text-align: center; border-bottom: 2px solid #003366; padding-bottom: 8px; margin-bottom: 12px;">
+                        <h1 style="font-size: 12pt; color: #003366; font-weight: bold; margin: 0;">UNIVERSIDAD NACIONAL DE LOJA</h1>
+                        <h2 style="font-size: 10pt; color: #334155; margin: 2px 0;">FACULTAD DE LA ENERGÍA, LAS INDUSTRIAS Y LOS RECURSOS NATURALES NO RENOVABLES</h2>
+                        <h3 style="font-size: 11pt; color: #003366; margin: 4px 0;">CARRERA DE COMPUTACIÓN</h3>
+                        <p style="font-size: 9pt; font-weight: bold; color: #059669; margin-top: 4px;">INFORME DE VERIFICACIÓN Y AUDITORÍA DE CALIDAD DEL AULA VIRTUAL (EVA-MOODLE)</p>
+                    </div>
+
+                    <table style="width: 100%; border-collapse: collapse; font-size: 8.5pt; margin-bottom: 12px;">
+                        <tr>
+                            <td style="border: 1px solid #cbd5e1; padding: 4px; font-weight: bold; background: #f1f5f9; width: 20%;">Asignatura:</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 4px; font-weight: bold;">${asig}</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 4px; font-weight: bold; background: #f1f5f9; width: 20%;">Score EVA:</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 4px; font-weight: bold; color: #059669;">${score} (${status})</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #cbd5e1; padding: 4px; font-weight: bold; background: #f1f5f9;">Docente:</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 4px;">${doc}</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 4px; font-weight: bold; background: #f1f5f9;">Período PAO:</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 4px;">${pao}</td>
+                        </tr>
+                    </table>
+
+                    <h4 style="font-size: 9.5pt; color: #003366; font-weight: bold; margin-bottom: 6px; border-bottom: 1px solid #e2e8f0; padding-bottom: 2px;">Resultados de Evaluación por Criterios Normativos (14 Puntos):</h4>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 8pt; margin-bottom: 16px;">
+                        <thead>
+                            <tr style="background: #003366; color: white;">
+                                <th style="border: 1px solid #94a3b8; padding: 5px; width: 6%;">Nº</th>
+                                <th style="border: 1px solid #94a3b8; padding: 5px; width: 44%;">Criterio de Calidad</th>
+                                <th style="border: 1px solid #94a3b8; padding: 5px; width: 20%;">Estado</th>
+                                <th style="border: 1px solid #94a3b8; padding: 5px; width: 30%;">Detalle / Evidencia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${criteriaRows}
+                        </tbody>
+                    </table>
+
+                    <div style="margin-top: 30px; text-align: center;">
+                        <div style="width: 50%; margin: 0 auto; border-top: 1px solid #475569; padding-top: 4px; font-size: 8pt;">
+                            <strong>${doc}</strong><br>
+                            <span>DOCENTE RESPONSABLE</span><br>
+                            <span style="font-size: 7pt; color: #6b7280;">(Informe Generado para Portafolio Docente)</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         function exportReportEVAPDF() {
-            const previewEl = document.getElementById('evaCriteriaTableBody').parentElement;
-            const opt = { margin: 10, filename: 'Informe_Calidad_EVA_UNL.pdf', html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, jsPDF: { unit: 'mm', format: 'a4' } };
-            html2pdf().set(opt).from(previewEl).save();
+            const htmlContent = generateEVAReportHTML();
+            const clone = document.createElement('div');
+            clone.innerHTML = htmlContent;
+            clone.style.width = '794px';
+            clone.style.position = 'absolute';
+            clone.style.left = '-9999px';
+            clone.style.top = '0';
+            document.body.appendChild(clone);
+
+            const opt = {
+                margin: [10, 10, 12, 10],
+                filename: 'Informe_Calidad_EVA_UNL.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 800 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            if (typeof html2pdf !== 'undefined') {
+                html2pdf().set(opt).from(clone).save().then(() => {
+                    document.body.removeChild(clone);
+                }).catch(err => {
+                    console.error(err);
+                    if (clone.parentNode) clone.parentNode.removeChild(clone);
+                });
+            } else {
+                alert('html2pdf no disponible.');
+                document.body.removeChild(clone);
+            }
         }
 
         function exportReportEVADOCX() {
-            exportActaDOCX();
+            const htmlContent = generateEVAReportHTML();
+            const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Informe_Calidad_EVA_UNL.doc';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
 
 
@@ -1227,9 +1339,106 @@ ${doc}`;
         // MÓDULO 3: VALIDADOR ESTRICTO DE SÍLABOS
         // =========================================================================
 
+        function initDragAndDrop() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            if (!dropZone || !fileInput) return;
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropZone.classList.add('drag-over');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropZone.classList.remove('drag-over');
+                }, false);
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files && files.length > 0) {
+                    fileInput.files = files;
+                    processSelectedFile(files[0]);
+                }
+            }, false);
+        }
+
         function handleFileSelect(event) {
-            if (event.target.files.length > 0) {
-                document.getElementById('fileStatusText').innerHTML = `<i class="fa-solid fa-check text-emerald-600"></i> Archivo seleccionado: <strong>${event.target.files[0].name}</strong>`;
+            if (event.target.files && event.target.files.length > 0) {
+                processSelectedFile(event.target.files[0]);
+            }
+        }
+
+        async function processSelectedFile(file) {
+            if (!file) return;
+            const statusText = document.getElementById('fileStatusText');
+            const silaboText = document.getElementById('silaboText');
+            statusText.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-unl-blue"></i> Procesando <strong>${file.name}</strong>...`;
+
+            try {
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (ext === 'txt') {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        silaboText.value = e.target.result;
+                        statusText.innerHTML = `<i class="fa-solid fa-check text-emerald-600"></i> Archivo TXT cargado (${file.name})`;
+                        analyzeSilabo();
+                    };
+                    reader.readAsText(file);
+                } else if (ext === 'docx') {
+                    if (typeof mammoth !== 'undefined') {
+                        const reader = new FileReader();
+                        reader.onload = async (e) => {
+                            try {
+                                const result = await mammoth.extractRawText({ arrayBuffer: e.target.result });
+                                silaboText.value = result.value;
+                                statusText.innerHTML = `<i class="fa-solid fa-check text-emerald-600"></i> Archivo Word (.docx) extraído con éxito (${file.name})`;
+                                analyzeSilabo();
+                            } catch (err) {
+                                statusText.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Error al leer Word: ${err.message}`;
+                            }
+                        };
+                        reader.readAsArrayBuffer(file);
+                    } else {
+                        statusText.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Librería Mammoth no disponible.`;
+                    }
+                } else if (ext === 'pdf') {
+                    if (typeof pdfjsLib !== 'undefined') {
+                        const reader = new FileReader();
+                        reader.onload = async (e) => {
+                            try {
+                                const loadingTask = pdfjsLib.getDocument({ data: e.target.result });
+                                const pdf = await loadingTask.promise;
+                                let fullText = '';
+                                for (let i = 1; i <= pdf.numPages; i++) {
+                                    const page = await pdf.getPage(i);
+                                    const textContent = await page.getTextContent();
+                                    const pageText = textContent.items.map(item => item.str).join(' ');
+                                    fullText += pageText + '\n';
+                                }
+                                silaboText.value = fullText;
+                                statusText.innerHTML = `<i class="fa-solid fa-check text-emerald-600"></i> PDF procesado (${pdf.numPages} pág) (${file.name})`;
+                                analyzeSilabo();
+                            } catch (err) {
+                                statusText.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Error al leer PDF: ${err.message}`;
+                            }
+                        };
+                        reader.readAsArrayBuffer(file);
+                    } else {
+                        statusText.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Librería PDF.js no disponible.`;
+                    }
+                } else {
+                    statusText.innerHTML = `<i class="fa-solid fa-xmark text-rose-600"></i> Formato no soportado. Elija PDF, DOCX o TXT.`;
+                }
+            } catch (err) {
+                statusText.innerHTML = `<i class="fa-solid fa-xmark text-rose-600"></i> Error: ${err.message}`;
             }
         }
 
@@ -1272,12 +1481,111 @@ Evaluación: Examen 100%`;
             saveRecordToHistory('AUDITORIA_SILABO', 'INTELIGENCIA ARTIFICIAL Y SISTEMAS EXPERTOS', 'Auditoría Microcurricular de Sílabo', '95% APROBADO');
         }
 
+        function generateSilaboReportHTML() {
+            const asig = document.getElementById('silaboDetectedTitle').innerText || 'Asignatura Analizada';
+            const code = document.getElementById('silaboDetectedCode').innerText || 'Código / Horas';
+            const score = document.getElementById('scorePercentage').innerText || '95%';
+            const badge = document.getElementById('statusBadge').innerText || 'SÍLABO APROBADO';
+            const doc = document.getElementById('encDocente').value || 'Docente Responsable';
+            const pao = document.getElementById('encPAO').value || 'Septiembre 2026 - Marzo 2027';
+
+            const acd = document.getElementById('infoACD').innerText || '48h';
+            const ape = document.getElementById('infoAPE').innerText || '32h';
+            const aa = document.getElementById('infoAA').innerText || '64h';
+            const total = document.getElementById('infoTotalHours').innerText || '144h';
+
+            return `
+                <div style="font-family: Arial, sans-serif; padding: 20px; color: #0f172a; max-width: 800px; margin: 0 auto; background: white;">
+                    <div style="text-align: center; border-bottom: 2px solid #003366; padding-bottom: 8px; margin-bottom: 12px;">
+                        <h1 style="font-size: 12pt; color: #003366; font-weight: bold; margin: 0;">UNIVERSIDAD NACIONAL DE LOJA</h1>
+                        <h2 style="font-size: 10pt; color: #334155; margin: 2px 0;">FACULTAD DE LA ENERGÍA, LAS INDUSTRIAS Y LOS RECURSOS NATURALES NO RENOVABLES</h2>
+                        <h3 style="font-size: 11pt; color: #003366; margin: 4px 0;">CARRERA DE COMPUTACIÓN</h3>
+                        <p style="font-size: 9pt; font-weight: bold; color: #d97706; margin-top: 4px;">INFORME DE AUDITORÍA Y VALIDACIÓN ESTRUCTURAL DE SÍLABO</p>
+                    </div>
+
+                    <table style="width: 100%; border-collapse: collapse; font-size: 8.5pt; margin-bottom: 12px;">
+                        <tr>
+                            <td style="border: 1px solid #cbd5e1; padding: 4px; font-weight: bold; background: #f1f5f9; width: 20%;">Asignatura:</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 4px; font-weight: bold;">${asig}</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 4px; font-weight: bold; background: #f1f5f9; width: 20%;">Resultado:</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 4px; font-weight: bold; color: #059669;">${score} (${badge})</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #cbd5e1; padding: 4px; font-weight: bold; background: #f1f5f9;">Docente:</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 4px;">${doc}</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 4px; font-weight: bold; background: #f1f5f9;">PAO / Detalle:</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 4px;">${pao} (${code})</td>
+                        </tr>
+                    </table>
+
+                    <h4 style="font-size: 9.5pt; color: #003366; font-weight: bold; margin-bottom: 6px; border-bottom: 1px solid #e2e8f0; padding-bottom: 2px;">Distribución Horaria Evaluada:</h4>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 8.5pt; margin-bottom: 16px; text-align: center;">
+                        <tr style="background: #003366; color: white;">
+                            <th style="padding: 5px; border: 1px solid #94a3b8;">Horas ACD</th>
+                            <th style="padding: 5px; border: 1px solid #94a3b8;">Horas APE</th>
+                            <th style="padding: 5px; border: 1px solid #94a3b8;">Horas AA</th>
+                            <th style="padding: 5px; border: 1px solid #94a3b8;">Total Horas PAO</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 5px; border: 1px solid #cbd5e1; font-weight: bold;">${acd}</td>
+                            <td style="padding: 5px; border: 1px solid #cbd5e1; font-weight: bold;">${ape}</td>
+                            <td style="padding: 5px; border: 1px solid #cbd5e1; font-weight: bold;">${aa}</td>
+                            <td style="padding: 5px; border: 1px solid #cbd5e1; font-weight: bold; color: #003366;">${total}</td>
+                        </tr>
+                    </table>
+
+                    <div style="margin-top: 30px; text-align: center;">
+                        <div style="width: 50%; margin: 0 auto; border-top: 1px solid #475569; padding-top: 4px; font-size: 8pt;">
+                            <strong>${doc}</strong><br>
+                            <span>DOCENTE RESPONSABLE</span><br>
+                            <span style="font-size: 7pt; color: #6b7280;">(Auditoría Microcurricular UNL)</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         function exportReportSilaboPDF() {
-            exportActaPDF();
+            const htmlContent = generateSilaboReportHTML();
+            const clone = document.createElement('div');
+            clone.innerHTML = htmlContent;
+            clone.style.width = '794px';
+            clone.style.position = 'absolute';
+            clone.style.left = '-9999px';
+            clone.style.top = '0';
+            document.body.appendChild(clone);
+
+            const opt = {
+                margin: [10, 10, 12, 10],
+                filename: 'Informe_Auditoria_Silabo_UNL.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 800 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            if (typeof html2pdf !== 'undefined') {
+                html2pdf().set(opt).from(clone).save().then(() => {
+                    document.body.removeChild(clone);
+                }).catch(err => {
+                    console.error(err);
+                    if (clone.parentNode) clone.parentNode.removeChild(clone);
+                });
+            } else {
+                alert('html2pdf no disponible.');
+                document.body.removeChild(clone);
+            }
         }
 
         function exportReportSilaboDOCX() {
-            exportActaDOCX();
+            const htmlContent = generateSilaboReportHTML();
+            const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Informe_Auditoria_Silabo_UNL.doc';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
 
 
