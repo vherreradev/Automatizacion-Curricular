@@ -1464,7 +1464,7 @@ ${doc}`;
         }
 
         function generateEVAReportHTML() {
-            const asig = document.getElementById('encAsignatura').value || 'Inteligencia Artificial y Sistemas Expertos';
+            const asig = document.getElementById('encAsignatura').value || 'Asignatura Registrada';
             const doc = document.getElementById('encDocente').value || 'Docente Responsable';
             const pao = document.getElementById('encPAO').value || 'Septiembre 2026 - Marzo 2027';
             const score = document.getElementById('evaScorePercent').innerText || '100%';
@@ -1703,25 +1703,63 @@ Evaluación: Examen 100%`;
             analyzeSilabo();
         }
 
+        function extractSilaboBasicData(text) {
+            let title = 'ASIGNATURA EN ANÁLISIS';
+            let code = 'Sin código';
+            let acd = '48h', ape = '32h', aa = '64h', total = '144h';
+
+            // Buscar nombre de asignatura en el texto subido
+            const titleMatch = text.match(/(?:ASIGNATURA|SÍLABO DE|SILABO DE|MATERIA)[:\s]+([^
+]+)/i);
+            if (titleMatch && titleMatch[1].trim()) {
+                title = titleMatch[1].trim().replace(/^LA\s+/i, '').toUpperCase();
+            } else {
+                const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 4 && !l.toLowerCase().includes('universidad') && !l.toLowerCase().includes('facultad') && !l.toLowerCase().includes('carrera'));
+                if (lines.length > 0) {
+                    title = lines[0].toUpperCase();
+                }
+            }
+
+            const codeMatch = text.match(/(?:CÓDIGO|CODIGO|CODE)[:\s]+([A-Za-z0-9\-_]+)/i);
+            if (codeMatch) code = codeMatch[1].trim();
+
+            const acdMatch = text.match(/(?:ACD|Docencia)[:\s]+(\d+)/i);
+            if (acdMatch) acd = acdMatch[1] + 'h';
+
+            const apeMatch = text.match(/(?:APE|Práctica|Prácticas)[:\s]+(\d+)/i);
+            if (apeMatch) ape = apeMatch[1] + 'h';
+
+            const aaMatch = text.match(/(?:AA|Autónomo|Autónomas)[:\s]+(\d+)/i);
+            if (aaMatch) aa = aaMatch[1] + 'h';
+
+            const totalMatch = text.match(/(?:Total|TOTAL)[:\s]+(\d+)/i);
+            if (totalMatch) total = totalMatch[1] + 'h';
+
+            return { title, code, acd, ape, aa, total };
+        }
+
         function analyzeSilabo() {
             const text = document.getElementById('silaboText').value.trim();
             if (!text) {
-                alert('Por favor ingrese el texto de un sílabo para analizar.');
+                alert('Por favor ingrese o suba el texto de un sílabo para analizar.');
                 return;
             }
 
-            document.getElementById('silaboResultsSection').classList.remove('hidden');
-            document.getElementById('scorePercentage').innerText = '95%';
-            document.getElementById('statusBadge').innerText = 'SÍLABO APROBADO';
-            document.getElementById('statusBadge').className = 'mt-3 px-3 py-1 rounded-full text-[11px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-300';
-            document.getElementById('silaboDetectedTitle').innerText = 'INTELIGENCIA ARTIFICIAL Y SISTEMAS EXPERTOS';
-            document.getElementById('silaboDetectedCode').innerText = 'Código: 0904-CS-05 | Total 144 Horas PAO';
-            document.getElementById('infoACD').innerText = '48h';
-            document.getElementById('infoAPE').innerText = '32h';
-            document.getElementById('infoAA').innerText = '64h';
-            document.getElementById('infoTotalHours').innerText = '144h';
+            const data = extractSilaboBasicData(text);
 
-            saveRecordToHistory('AUDITORIA_SILABO', 'INTELIGENCIA ARTIFICIAL Y SISTEMAS EXPERTOS', 'Auditoría Microcurricular de Sílabo', '95% APROBADO');
+            document.getElementById('silaboResultsSection').classList.remove('hidden');
+            document.getElementById('scorePercentage').innerText = '90%';
+            document.getElementById('statusBadge').innerText = 'SÍLABO EVALUADO';
+            document.getElementById('statusBadge').className = 'mt-3 px-3 py-1 rounded-full text-[11px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-300';
+            
+            document.getElementById('silaboDetectedTitle').innerText = data.title;
+            document.getElementById('silaboDetectedCode').innerText = `Código: ${data.code} | Total Horas: ${data.total}`;
+            document.getElementById('infoACD').innerText = data.acd;
+            document.getElementById('infoAPE').innerText = data.ape;
+            document.getElementById('infoAA').innerText = data.aa;
+            document.getElementById('infoTotalHours').innerText = data.total;
+
+            saveRecordToHistory('AUDITORIA_SILABO', data.title, 'Auditoría Microcurricular de Sílabo', '90% EVALUADO');
         }
 
         function generateSilaboReportHTML() {
