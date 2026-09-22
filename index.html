@@ -1711,8 +1711,7 @@ Evaluación: Examen 100%`;
             let acd = '48h', ape = '32h', aa = '64h', total = '144h';
 
             // Buscar nombre de asignatura en el texto subido
-            const titleMatch = text.match(/(?:ASIGNATURA|SÍLABO DE|SILABO DE|MATERIA)[:\s]+([^
-]+)/i);
+            const titleMatch = text.match(/(?:ASIGNATURA|SÍLABO DE|SILABO DE|MATERIA)[:\s]+([^\r\n]+)/i);
             if (titleMatch && titleMatch[1].trim()) {
                 title = titleMatch[1].trim().replace(/^LA\s+/i, '').toUpperCase();
             } else {
